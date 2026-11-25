@@ -411,3 +411,18 @@ test('validateTerminalSecret, toFirebaseAuthPassword, and authenticateLocalStaff
   assert.equal(revoked.ok, false);
 });
 
+test('sanitizeImageUrl allows safe URLs and data URIs while blocking unsafe schemes', async () => {
+  const { sanitizeImageUrl } = await import('./posLogic');
+  assert.equal(
+    sanitizeImageUrl('./src/assets/images/gold_rope_chain.jpg'),
+    './src/assets/images/gold_rope_chain.jpg'
+  );
+  assert.equal(sanitizeImageUrl('https://cdn.example.com/ring.jpg'), 'https://cdn.example.com/ring.jpg');
+  assert.equal(
+    sanitizeImageUrl('data:image/jpeg;base64,/9j/4AAQSkZJRg=='),
+    'data:image/jpeg;base64,/9j/4AAQSkZJRg=='
+  );
+  assert.equal(sanitizeImageUrl('javascript:alert(1)'), '');
+  assert.equal(sanitizeImageUrl('x'.repeat(60000)), '');
+});
+

@@ -76,6 +76,7 @@ export interface InventoryItem {
   reorderLevel: number;
   supplier: string;
   notes: string;
+  imageUrl?: string;
   ownerUid?: string;
   memberEmails?: string[];
   createdByUid?: string;

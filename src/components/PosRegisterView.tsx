@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Search,
   Plus,
@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ScanLine,
   X,
+  Gem,
 } from 'lucide-react';
 import { usePos } from '../context/PosContext';
 import {
@@ -24,6 +25,35 @@ import {
   SaleRecord,
 } from '../types/pos';
 import { computeCartTotals, formatCurrency, getTodayDateString } from '../utils/posLogic';
+
+const ProductCardImage: React.FC<{ src?: string; alt: string }> = ({ src, alt }) => {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) {
+    return (
+      <div className="h-36 w-full rounded-lg bg-[#FAF8F5] border border-[#F0E9DF] mb-3 flex items-center justify-center text-[#C8B9AE]">
+        <Gem className="w-7 h-7" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-36 w-full rounded-lg overflow-hidden bg-[#FAF8F5] border border-[#F0E9DF] mb-3">
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        onError={() => setFailed(true)}
+        referrerPolicy="no-referrer"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
+  );
+};
 
 interface CartEntry {
   itemId: string;
@@ -373,6 +403,7 @@ export const PosRegisterView: React.FC = () => {
                     } ${isOut ? 'opacity-55 cursor-not-allowed' : ''}`}
                   >
                     <div>
+                      <ProductCardImage src={item.imageUrl} alt={item.name} />
                       <div className="flex items-center justify-between gap-2 text-xs">
                         <span className="font-medium text-[#BE1A1A] truncate">
                           {item.category}
@@ -382,7 +413,7 @@ export const PosRegisterView: React.FC = () => {
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-semibold text-[#231712] mt-2.5 leading-snug line-clamp-2">
+                      <h3 className="text-sm font-semibold text-[#231712] mt-2 leading-snug line-clamp-2">
                         {item.name}
                       </h3>
 
@@ -462,14 +493,31 @@ export const PosRegisterView: React.FC = () => {
             <ul className="divide-y divide-[#F0E9DF] max-h-64 overflow-y-auto pr-1">
               {cartLinesWithItems.map(({ item, quantity }) => (
                 <li key={item.id} className="py-3 flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#231712] truncate">{item.name}</p>
-                    <p className="text-xs font-mono tabular-nums text-[#766257] mt-0.5">
-                      {formatCurrency(item.retailPrice)} × {quantity} ={' '}
-                      <span className="text-[#231712] font-medium">
-                        {formatCurrency(item.retailPrice * quantity)}
-                      </span>
-                    </p>
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        referrerPolicy="no-referrer"
+                        className="w-9 h-9 rounded-md object-cover border border-[#E8DFD3] bg-[#FAF8F5] shrink-0"
+                      />
+                    ) : (
+                      <div
+                        className="w-9 h-9 rounded-md border border-[#E8DFD3] bg-[#FAF8F5] flex items-center justify-center text-[#C8B9AE] shrink-0"
+                        aria-hidden="true"
+                      >
+                        <Gem className="w-4 h-4" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#231712] truncate">{item.name}</p>
+                      <p className="text-xs font-mono tabular-nums text-[#766257] mt-0.5">
+                        {formatCurrency(item.retailPrice)} × {quantity} ={' '}
+                        <span className="text-[#231712] font-medium">
+                          {formatCurrency(item.retailPrice * quantity)}
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">

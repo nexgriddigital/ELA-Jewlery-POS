@@ -45,6 +45,7 @@
         "reorderLevel": { "type": "number" },
         "supplier": { "type": "string", "maxLength": 100 },
         "notes": { "type": "string", "maxLength": 300 },
+        "imageUrl": { "type": "string", "maxLength": 50000 },
         "memberEmails": { "type": "array" },
         "createdByUid": { "type": "string", "maxLength": 128 },
         "createdByEmail": { "type": "string", "maxLength": 120 },

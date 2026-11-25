@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Menu, Cloud, HardDrive, X } from 'lucide-react';
+import { AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PosProvider, usePos } from './context/PosContext';
 import { WelcomeGate } from './components/WelcomeGate';
+import { WelcomeLoadingScreen } from './components/WelcomeLoadingScreen';
 import { AccessPendingGate } from './components/AccessPendingGate';
 import { Sidebar } from './components/Sidebar';
 import { PosRegisterView } from './components/PosRegisterView';
@@ -34,6 +36,7 @@ const PosShell: React.FC = () => {
     enteredApp,
     authReady,
     accessStatus,
+    loadingData,
     currentUserRole,
     can,
     authorizedMemberCount,
@@ -46,6 +49,26 @@ const PosShell: React.FC = () => {
 
   const [activeView, setActiveView] = useState<ActiveView>('pos');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [welcomeTransitionActive, setWelcomeTransitionActive] = useState<boolean>(enteredApp);
+  const prevEnteredRef = useRef<boolean>(enteredApp);
+
+  // Trigger brief personalized Welcome loading animation when entering the terminal
+  useEffect(() => {
+    if (enteredApp && !prevEnteredRef.current) {
+      setWelcomeTransitionActive(true);
+    } else if (!enteredApp && prevEnteredRef.current) {
+      setWelcomeTransitionActive(false);
+    }
+    prevEnteredRef.current = enteredApp;
+  }, [enteredApp]);
+
+  useEffect(() => {
+    if (!welcomeTransitionActive) return;
+    const timer = window.setTimeout(() => {
+      setWelcomeTransitionActive(false);
+    }, 1350);
+    return () => window.clearTimeout(timer);
+  }, [welcomeTransitionActive]);
 
   // Redirect to POS if current role loses permission for the active tab
   useEffect(() => {
@@ -56,19 +79,10 @@ const PosShell: React.FC = () => {
 
   if (!authReady || (user && accessStatus === 'checking')) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <img
-            src="./assets/aistudio/image_89dfb75c.png"
-            alt="ELA Jewelry"
-            className="h-20 mx-auto object-contain"
-            referrerPolicy="no-referrer"
-          />
-          <p className="text-sm text-[#766257]">
-            Connecting to shared ELA Jewelry database...
-          </p>
-        </div>
-      </div>
+      <WelcomeLoadingScreen
+        userName={user ? activeCashierName : undefined}
+        subtitle="Connecting to shared ELA Jewelry database..."
+      />
     );
   }
 
@@ -80,8 +94,24 @@ const PosShell: React.FC = () => {
     return <WelcomeGate />;
   }
 
+  const showWorkspaceLoader = loadingData || welcomeTransitionActive;
+
   return (
     <div className="min-h-screen flex bg-[#FAF8F5] text-[#231712]">
+      <AnimatePresence>
+        {showWorkspaceLoader && (
+          <WelcomeLoadingScreen
+            key="welcome-loader"
+            userName={activeCashierName}
+            userRole={currentUserRole}
+            subtitle={
+              loadingData
+                ? 'Syncing shared inventory & sales ledger...'
+                : 'Preparing your boutique register...'
+            }
+          />
+        )}
+      </AnimatePresence>
       <Sidebar
         activeView={activeView}
         onSelectView={setActiveView}

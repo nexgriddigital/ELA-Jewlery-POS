@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Plus, Search, Pencil, Trash2, SlidersHorizontal, X } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Plus, Search, Pencil, Trash2, SlidersHorizontal, X, Image as ImageIcon, Upload } from 'lucide-react';
 import { usePos } from '../context/PosContext';
 import { InventoryItem, PRODUCT_CATEGORIES, ProductCategory } from '../types/pos';
 import { calculateInventoryValuation, formatCurrency } from '../utils/posLogic';
@@ -15,6 +15,7 @@ interface ItemFormState {
   reorderLevel: string;
   supplier: string;
   notes: string;
+  imageUrl: string;
 }
 
 const EMPTY_FORM: ItemFormState = {
@@ -28,6 +29,75 @@ const EMPTY_FORM: ItemFormState = {
   reorderLevel: '3',
   supplier: '',
   notes: '',
+  imageUrl: '',
+};
+
+async function resizeImageToDataUrl(file: File): Promise<string> {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('Could not read the selected image file.'));
+      el.src = objectUrl;
+    });
+    const maxDim = 320;
+    const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1));
+    const width = Math.max(1, Math.round(img.width * scale));
+    const height = Math.max(1, Math.round(img.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas unavailable.');
+    ctx.fillStyle = '#FAF8F5';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    let dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+    if (dataUrl.length > 45000) {
+      dataUrl = canvas.toDataURL('image/jpeg', 0.52);
+    }
+    if (dataUrl.length > 48000) {
+      throw new Error('Image is too large even after compression. Please choose a smaller photo or paste an image URL.');
+    }
+    return dataUrl;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+const ItemThumbnail: React.FC<{ src?: string; alt: string; sizeClass?: string }> = ({
+  src,
+  alt,
+  sizeClass = 'w-11 h-11',
+}) => {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) {
+    return (
+      <div
+        className={`${sizeClass} rounded-lg border border-[#E8DFD3] bg-[#FAF8F5] flex items-center justify-center shrink-0 text-[#B8A699]`}
+        aria-hidden="true"
+      >
+        <ImageIcon className="w-4 h-4" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      referrerPolicy="no-referrer"
+      className={`${sizeClass} rounded-lg border border-[#E8DFD3] bg-[#FAF8F5] object-cover shrink-0`}
+    />
+  );
 };
 
 export const InventoryView: React.FC = () => {
@@ -100,9 +170,23 @@ export const InventoryView: React.FC = () => {
       reorderLevel: String(item.reorderLevel),
       supplier: item.supplier,
       notes: item.notes,
+      imageUrl: item.imageUrl || '',
     });
     setFormError('');
     setModalOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const dataUrl = await resizeImageToDataUrl(file);
+      setForm((prev) => ({ ...prev, imageUrl: dataUrl }));
+      setFormError('');
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Unable to process image.');
+    }
   };
 
   const handleSaveItem = async (e: React.FormEvent) => {
@@ -136,6 +220,7 @@ export const InventoryView: React.FC = () => {
       reorderLevel: Math.max(0, Math.floor(reorder || 0)),
       supplier: form.supplier.trim(),
       notes: form.notes.trim(),
+      imageUrl: form.imageUrl.trim(),
     };
 
     try {
@@ -312,10 +397,15 @@ export const InventoryView: React.FC = () => {
                         <div className="text-[11px] text-[#766257]">{item.barcode}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-[#231712]">{item.name}</div>
-                        <div className="text-xs text-[#766257]">
-                          {item.supplier || 'Direct Atelier'}
-                          {item.notes ? ` · ${item.notes}` : ''}
+                        <div className="flex items-center gap-3">
+                          <ItemThumbnail src={item.imageUrl} alt={item.name} />
+                          <div className="min-w-0">
+                            <div className="font-medium text-[#231712]">{item.name}</div>
+                            <div className="text-xs text-[#766257]">
+                              {item.supplier || 'Direct Atelier'}
+                              {item.notes ? ` · ${item.notes}` : ''}
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-xs text-[#5C493F] whitespace-nowrap">
@@ -581,6 +671,50 @@ export const InventoryView: React.FC = () => {
                   placeholder="Material, carat, volume, or packaging details"
                   className="w-full px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label htmlFor="inv-image-url" className="block text-xs font-semibold text-[#231712] mb-1.5">
+                  Product Image (Optional)
+                </label>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-[#E8DFD3] bg-[#FAF8F5]">
+                  <ItemThumbnail
+                    src={form.imageUrl}
+                    alt={form.name || 'Product preview'}
+                    sizeClass="w-16 h-16"
+                  />
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E8DFD3] bg-white hover:bg-[#F8EBAB]/30 text-xs font-medium text-[#231712] cursor-pointer">
+                        <Upload className="w-3.5 h-3.5 text-[#BE1A1A]" aria-hidden="true" />
+                        <span>Upload Photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="sr-only"
+                        />
+                      </label>
+                      {form.imageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setForm({ ...form, imageUrl: '' })}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#BE1A1A] hover:bg-[#FCE8E6] cursor-pointer"
+                        >
+                          Remove Image
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      id="inv-image-url"
+                      type="text"
+                      value={form.imageUrl}
+                      onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                      placeholder="Paste image URL (https://...) or upload a photo above"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -69,11 +69,12 @@ import {
   resolveUserRole,
   RoleCapability,
   roundMoney,
+  sanitizeImageUrl,
   sanitizeText,
   toFirebaseAuthPassword,
   validateTerminalSecret,
 } from '../utils/posLogic';
-import { createSeedData } from '../data/seedData';
+import { createSeedData, DEFAULT_SEED_IMAGES_BY_ID } from '../data/seedData';
 
 const LOCAL_STORAGE_KEY = 'ela_jewelry_pos_store_v1';
 const LOCAL_SESSION_STAFF_KEY = 'ela_jewelry_terminal_staff_id_v1';
@@ -96,6 +97,7 @@ interface NewItemInput {
   reorderLevel: number;
   supplier: string;
   notes: string;
+  imageUrl?: string;
 }
 
 interface RecordSaleInput {
@@ -231,7 +233,16 @@ function loadLocalStore(): PosStoreState {
     if (raw) {
       const parsed = JSON.parse(raw) as PosStoreState;
       if (parsed && Array.isArray(parsed.inventory)) {
-        return parsed;
+        return {
+          ...parsed,
+          inventory: parsed.inventory.map((item) => ({
+            ...item,
+            imageUrl:
+              typeof item.imageUrl === 'string'
+                ? item.imageUrl
+                : DEFAULT_SEED_IMAGES_BY_ID[item.id] || '',
+          })),
+        };
       }
     }
   } catch {
@@ -604,6 +615,10 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             reorderLevel: Number(data.reorderLevel) || 0,
             supplier: data.supplier || '',
             notes: data.notes || '',
+            imageUrl:
+              typeof data.imageUrl === 'string'
+                ? data.imageUrl
+                : DEFAULT_SEED_IMAGES_BY_ID[d.id] || '',
           } as InventoryItem;
         });
         setStore((prev) => ({ ...prev, inventory: items }));
@@ -1122,6 +1137,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             reorderLevel: item.reorderLevel,
             supplier: item.supplier,
             notes: item.notes,
+            imageUrl: item.imageUrl || '',
             memberEmails: currentMemberEmails,
             createdByUid: user.uid,
             createdByEmail: signedInEmail,
@@ -1154,6 +1170,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         reorderLevel: Math.max(0, Math.floor(Number(input.reorderLevel) || 0)),
         supplier: sanitizeText(input.supplier, 100),
         notes: sanitizeText(input.notes, 300),
+        imageUrl: sanitizeImageUrl(input.imageUrl || ''),
       };
 
       if (!user) {
@@ -1200,6 +1217,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         cleaned.reorderLevel = Math.max(0, Math.floor(Number(input.reorderLevel) || 0));
       if (input.supplier !== undefined) cleaned.supplier = sanitizeText(input.supplier, 100);
       if (input.notes !== undefined) cleaned.notes = sanitizeText(input.notes, 300);
+      if (input.imageUrl !== undefined) cleaned.imageUrl = sanitizeImageUrl(input.imageUrl);
 
       if (!user) {
         commitLocalStore((prev) => ({

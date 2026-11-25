@@ -13,6 +13,18 @@ function daysAhead(days: number): string {
   return getTodayDateString(d);
 }
 
+export const DEFAULT_SEED_IMAGES_BY_ID: Record<string, string> = {
+  inv_gld_chain: './src/assets/images/gold_rope_chain_1795607543575.jpg',
+  inv_dia_ring: './src/assets/images/pave_solitaire_ring_1795607543969.jpg',
+  inv_pearl_ear: './src/assets/images/pearl_drop_earrings_1795607543340.jpg',
+  inv_oud_parfum: './src/assets/images/velvet_oud_parfum_1795607543917.jpg',
+  inv_rose_elixir: './src/assets/images/rose_amber_elixir_1795607543654.jpg',
+  inv_crimson_lip: './src/assets/images/crimson_velvet_lipstick_1795607543299.jpg',
+  inv_gold_glow: './src/assets/images/champagne_highlighter_palette_1795607542579.jpg',
+  inv_chrono_watch: './src/assets/images/gold_mesh_chronograph_1795607543809.jpg',
+  inv_bridal_set: './src/assets/images/royal_celebration_coffret_1795607544922.jpg',
+};
+
 export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
   const today = getTodayDateString();
   const d1 = daysAgo(1);
@@ -34,6 +46,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 4,
         supplier: 'Aurelia Fine Metals',
         notes: 'Solid clasp, velvet gift box included',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_gld_chain,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -50,6 +63,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 3,
         supplier: 'Aurelia Fine Metals',
         notes: 'Sizes 6–8 available, 18K vermeil setting',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_dia_ring,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -66,6 +80,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 5,
         supplier: 'Aurelia Fine Metals',
         notes: 'Hypoallergenic gold posts',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_pearl_ear,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -82,6 +97,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 6,
         supplier: 'Maison Orient Parfums',
         notes: 'Unisex saffron, ambergris & smoked oud',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_oud_parfum,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -98,6 +114,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 4,
         supplier: 'Maison Orient Parfums',
         notes: 'Signature feminine floral-woody extrait',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_rose_elixir,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -114,6 +131,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 8,
         supplier: 'Luxe Atelier Cosmetics',
         notes: 'Shade #01 Imperial Crimson, gold tube',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_crimson_lip,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -130,6 +148,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 6,
         supplier: 'Luxe Atelier Cosmetics',
         notes: 'Four luminous warm-gold pressed shades',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_gold_glow,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -146,6 +165,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 3,
         supplier: 'Geneva Craft Timepieces',
         notes: 'Sapphire crystal, water resistant 5ATM',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_chrono_watch,
         ownerUid,
         createdAt: d10,
         updatedAt: today,
@@ -162,6 +182,7 @@ export function createSeedData(ownerUid = 'demo-ela-owner'): PosStoreState {
         reorderLevel: 3,
         supplier: 'Maison Orient Parfums',
         notes: 'Dual 50ml fragrances + gold keepsake tray',
+        imageUrl: DEFAULT_SEED_IMAGES_BY_ID.inv_bridal_set,
         ownerUid,
         createdAt: d10,
         updatedAt: today,

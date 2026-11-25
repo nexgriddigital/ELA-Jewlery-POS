@@ -121,7 +121,7 @@ service cloud.firestore {
       && data.keys().hasOnly([
         'id', 'storeId', 'sku', 'barcode', 'name', 'category',
         'costPrice', 'retailPrice', 'quantity', 'reorderLevel',
-        'supplier', 'notes', 'memberEmails', 'createdByUid', 'createdByEmail',
+        'supplier', 'notes', 'imageUrl', 'memberEmails', 'createdByUid', 'createdByEmail',
         'createdAt', 'updatedAt'
       ])
       && isValidId(data.id)
@@ -137,6 +137,7 @@ service cloud.firestore {
       && isNonNegNumber(data.reorderLevel)
       && isValidString(data.supplier, 0, 100)
       && isValidString(data.notes, 0, 300)
+      && (!('imageUrl' in data) || isValidString(data.imageUrl, 0, 50000))
       && isValidEmailArray(data.memberEmails, 1, 30)
       && isValidString(data.createdByUid, 1, 128)
       && isValidString(data.createdByEmail, 1, 120)
@@ -351,7 +352,7 @@ service cloud.firestore {
           || (isStoreManagerOrAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'costPrice', 'updatedAt']))
           || (isStoreManagerOrAdmin() && incoming().diff(existing()).affectedKeys().hasOnly([
             'sku', 'barcode', 'name', 'category', 'costPrice', 'retailPrice',
-            'quantity', 'reorderLevel', 'supplier', 'notes', 'updatedAt'
+            'quantity', 'reorderLevel', 'supplier', 'notes', 'imageUrl', 'updatedAt'
           ]))
           // Tier 3 (Any Authorized Staff / Cashier): POS stock deduction on sale
           || (isStoreMember() && incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'updatedAt']))

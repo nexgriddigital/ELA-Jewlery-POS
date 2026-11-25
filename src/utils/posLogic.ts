@@ -34,6 +34,21 @@ export function sanitizeText(value: string, maxLen: number): string {
     .slice(0, maxLen);
 }
 
+export function sanitizeImageUrl(value: string, maxLen = 50000): string {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed || trimmed.length > maxLen) return '';
+  if (
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('./') ||
+    trimmed.startsWith('/') ||
+    /^data:image\/(png|jpeg|jpg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(trimmed)
+  ) {
+    return trimmed;
+  }
+  return '';
+}
+
 export function generateId(prefix: string): string {
   const rand = Math.random().toString(36).slice(2, 8);
   const ts = Date.now().toString(36);
