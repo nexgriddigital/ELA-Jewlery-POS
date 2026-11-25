@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-ela-crimson: #BE1A1A;
+  --color-ela-vermilion: #D0311E;
+  --color-ela-gold: #F7D87F;
+  --color-ela-champagne: #F8EBAB;
+  --color-ela-espresso: #231712;
+  --color-ela-ink: #3D2B22;
+  --color-ela-muted: #766257;
+  --color-ela-canvas: #FAF8F5;
+  --color-ela-border: #E8DFD3;
+}
+
+@layer base {
+  html,
+  body {
+    font-family: var(--font-sans);
+    background-color: #FAF8F5;
+    color: #231712;
+  }
+
+  h1,
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Print Stylesheet for Item Label Studio & Sales Receipts */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only-sheet {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-label-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

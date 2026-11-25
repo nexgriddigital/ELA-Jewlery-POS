@@ -1,0 +1,319 @@
+{
+  "entities": {
+    "StoreConfig": {
+      "title": "StoreConfig",
+      "description": "Single shared ELA Jewelry store access control directory governing all multi-user roles.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeName": { "type": "string", "maxLength": 100 },
+        "adminEmails": { "type": "array" },
+        "managerEmails": { "type": "array" },
+        "cashierEmails": { "type": "array" },
+        "memberEmails": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeName",
+        "adminEmails",
+        "managerEmails",
+        "cashierEmails",
+        "memberEmails",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "InventoryItem": {
+      "title": "InventoryItem",
+      "description": "A catalog SKU tracked in the shared ELA Jewelry real-time inventory database.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "sku": { "type": "string", "maxLength": 40 },
+        "barcode": { "type": "string", "maxLength": 40 },
+        "name": { "type": "string", "maxLength": 120 },
+        "category": {
+          "type": "string",
+          "enum": ["Jewelry", "Perfumes", "Cosmetics", "Watches & Accessories", "Gift Sets"]
+        },
+        "costPrice": { "type": "number" },
+        "retailPrice": { "type": "number" },
+        "quantity": { "type": "number" },
+        "reorderLevel": { "type": "number" },
+        "supplier": { "type": "string", "maxLength": 100 },
+        "notes": { "type": "string", "maxLength": 300 },
+        "memberEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeId",
+        "sku",
+        "barcode",
+        "name",
+        "category",
+        "costPrice",
+        "retailPrice",
+        "quantity",
+        "reorderLevel",
+        "supplier",
+        "notes",
+        "memberEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SaleRecord": {
+      "title": "SaleRecord",
+      "description": "A completed or voided POS sale recorded by any authorized staff member into the shared store ledger.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "receiptNumber": { "type": "string", "maxLength": 40 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["Cash", "Card", "Bank Transfer", "Mobile Money", "Credit / Tab"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "voided"]
+        },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 40 },
+        "cashierName": { "type": "string", "maxLength": 100 },
+        "saleDate": { "type": "string", "maxLength": 40 },
+        "memberEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeId",
+        "receiptNumber",
+        "items",
+        "subtotal",
+        "discount",
+        "total",
+        "totalCost",
+        "paymentMethod",
+        "status",
+        "customerName",
+        "customerPhone",
+        "cashierName",
+        "saleDate",
+        "memberEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PurchaseRecord": {
+      "title": "PurchaseRecord",
+      "description": "A supplier purchase order recorded into the shared ELA Jewelry database.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "invoiceNumber": { "type": "string", "maxLength": 40 },
+        "supplierName": { "type": "string", "maxLength": 100 },
+        "items": { "type": "array" },
+        "totalCost": { "type": "number" },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["Paid", "Supplier Credit"]
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["Cash", "Bank Transfer", "Card", "Mobile Money", "Supplier Credit"]
+        },
+        "notes": { "type": "string", "maxLength": 300 },
+        "purchaseDate": { "type": "string", "maxLength": 40 },
+        "recordedBy": { "type": "string", "maxLength": 100 },
+        "memberEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeId",
+        "invoiceNumber",
+        "supplierName",
+        "items",
+        "totalCost",
+        "paymentStatus",
+        "paymentMethod",
+        "notes",
+        "purchaseDate",
+        "recordedBy",
+        "memberEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DebtRecord": {
+      "title": "DebtRecord",
+      "description": "Shared customer credit/debt tab accessible by authorized store staff.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 40 },
+        "saleId": { "type": "string", "maxLength": 64 },
+        "description": { "type": "string", "maxLength": 240 },
+        "totalAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "balance": { "type": "number" },
+        "status": {
+          "type": "string",
+          "enum": ["open", "settled"]
+        },
+        "dueDate": { "type": "string", "maxLength": 40 },
+        "issuedDate": { "type": "string", "maxLength": 40 },
+        "payments": { "type": "array" },
+        "memberEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeId",
+        "customerName",
+        "customerPhone",
+        "saleId",
+        "description",
+        "totalAmount",
+        "paidAmount",
+        "balance",
+        "status",
+        "dueDate",
+        "issuedDate",
+        "payments",
+        "memberEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "Non-PII operational staff directory record for the shared ELA Jewelry store.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "role": {
+          "type": "string",
+          "enum": ["Admin", "Manager", "Cashier"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "password_reset_required", "revoked"]
+        },
+        "memberEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "storeId",
+        "name",
+        "role",
+        "status",
+        "memberEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StaffPrivateInfo": {
+      "title": "StaffPrivateInfo",
+      "description": "Admin-isolated PII record (email, phone, access PIN) for staff members.",
+      "type": "object",
+      "properties": {
+        "staffId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "storeId": { "type": "string", "maxLength": 64 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "pinCode": { "type": "string", "maxLength": 20 },
+        "lastPasswordReset": { "type": "string", "maxLength": 40 },
+        "adminEmails": { "type": "array" },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdByEmail": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "staffId",
+        "storeId",
+        "email",
+        "phone",
+        "pinCode",
+        "lastPasswordReset",
+        "adminEmails",
+        "createdByUid",
+        "createdByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/store_config/{storeId}": {
+      "schema": { "$ref": "#/entities/StoreConfig" },
+      "description": "Master RBAC & membership gate for the single shared ELA Jewelry store database."
+    },
+    "/inventory/{itemId}": {
+      "schema": { "$ref": "#/entities/InventoryItem" },
+      "description": "Shared real-time inventory catalog synchronized across all authorized staff users."
+    },
+    "/sales/{saleId}": {
+      "schema": { "$ref": "#/entities/SaleRecord" },
+      "description": "Shared POS sales ledger synchronized across all authorized staff users."
+    },
+    "/purchases/{purchaseId}": {
+      "schema": { "$ref": "#/entities/PurchaseRecord" },
+      "description": "Shared supplier purchase orders synchronized across all authorized staff users."
+    },
+    "/debts/{debtId}": {
+      "schema": { "$ref": "#/entities/DebtRecord" },
+      "description": "Shared customer credit tabs and repayment ledger."
+    },
+    "/staff_members/{staffId}": {
+      "schema": { "$ref": "#/entities/StaffMember" },
+      "description": "Shared operational staff directory separated from PII."
+    },
+    "/staff_private/{staffId}": {
+      "schema": { "$ref": "#/entities/StaffPrivateInfo" },
+      "description": "Admin-only isolated staff PII (email, phone, access credentials)."
+    }
+  }
+}

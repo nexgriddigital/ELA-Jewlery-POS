@@ -1,0 +1,539 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Hardened Global Primitives (Multiple Users = One Shared Store Database)
+    // -------------------------------------------------------------------------
+    function storeDocId() {
+      return 'ela_jewelry_main';
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn()
+        && request.auth.token.email is string
+        && (
+          request.auth.token.email_verified == true
+          || request.auth.token.firebase.sign_in_provider == 'password'
+        );
+    }
+
+    function userEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && userEmail() == 'amanuealhailu007@gmail.com';
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 64 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isNonNegNumber(val) {
+      return (val is int || val is float) && val >= 0;
+    }
+
+    function isValidEmailArray(arr, minLen, maxLen) {
+      return arr is list
+        && arr.size() >= minLen
+        && arr.size() <= maxLen
+        && (arr.size() == 0 || arr[0] is string);
+    }
+
+    // Master Gate Lookups (used ONLY on single-document ops, NEVER inside allow list)
+    function hasStoreConfig() {
+      return exists(/databases/$(database)/documents/store_config/ela_jewelry_main);
+    }
+
+    function storeConfig() {
+      return get(/databases/$(database)/documents/store_config/ela_jewelry_main).data;
+    }
+
+    function isStoreAdmin() {
+      return isBootstrappedAdmin()
+        || (isVerifiedUser() && hasStoreConfig() && userEmail() in storeConfig().adminEmails);
+    }
+
+    function isStoreManagerOrAdmin() {
+      return isStoreAdmin()
+        || (isVerifiedUser() && hasStoreConfig() && userEmail() in storeConfig().managerEmails);
+    }
+
+    function isStoreMember() {
+      return isStoreManagerOrAdmin()
+        || (isVerifiedUser() && hasStoreConfig() && userEmail() in storeConfig().cashierEmails);
+    }
+
+    // -------------------------------------------------------------------------
+    // Entity Validation Blueprints (Anti-Update-Gap)
+    // -------------------------------------------------------------------------
+    function isValidStoreConfig(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeName', 'adminEmails', 'managerEmails', 'cashierEmails',
+        'memberEmails', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeName', 'adminEmails', 'managerEmails', 'cashierEmails',
+        'memberEmails', 'createdAt', 'updatedAt'
+      ])
+      && docId == storeDocId()
+      && data.id == storeDocId()
+      && isValidString(data.storeName, 1, 100)
+      && isValidEmailArray(data.adminEmails, 1, 10)
+      && isValidEmailArray(data.managerEmails, 0, 15)
+      && isValidEmailArray(data.cashierEmails, 0, 25)
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && 'amanuealhailu007@gmail.com' in data.adminEmails
+      && 'amanuealhailu007@gmail.com' in data.memberEmails
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidInventoryItem(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeId', 'sku', 'barcode', 'name', 'category',
+        'costPrice', 'retailPrice', 'quantity', 'reorderLevel',
+        'supplier', 'notes', 'memberEmails', 'createdByUid', 'createdByEmail',
+        'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeId', 'sku', 'barcode', 'name', 'category',
+        'costPrice', 'retailPrice', 'quantity', 'reorderLevel',
+        'supplier', 'notes', 'memberEmails', 'createdByUid', 'createdByEmail',
+        'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.id)
+      && data.id == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.sku, 1, 40)
+      && isValidString(data.barcode, 1, 40)
+      && isValidString(data.name, 1, 120)
+      && data.category in ['Jewelry', 'Perfumes', 'Cosmetics', 'Watches & Accessories', 'Gift Sets']
+      && isNonNegNumber(data.costPrice)
+      && isNonNegNumber(data.retailPrice)
+      && isNonNegNumber(data.quantity)
+      && isNonNegNumber(data.reorderLevel)
+      && isValidString(data.supplier, 0, 100)
+      && isValidString(data.notes, 0, 300)
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidSaleRecord(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeId', 'receiptNumber', 'items', 'subtotal', 'discount', 'total', 'totalCost',
+        'paymentMethod', 'status', 'customerName', 'customerPhone', 'cashierName',
+        'saleDate', 'memberEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeId', 'receiptNumber', 'items', 'subtotal', 'discount', 'total', 'totalCost',
+        'paymentMethod', 'status', 'customerName', 'customerPhone', 'cashierName',
+        'saleDate', 'memberEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.id)
+      && data.id == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.receiptNumber, 1, 40)
+      && data.items is list
+      && data.items.size() >= 1
+      && data.items.size() <= 50
+      && data.items[0] is map
+      && isNonNegNumber(data.subtotal)
+      && isNonNegNumber(data.discount)
+      && isNonNegNumber(data.total)
+      && isNonNegNumber(data.totalCost)
+      && data.paymentMethod in ['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Credit / Tab']
+      && data.status in ['completed', 'voided']
+      && isValidString(data.customerName, 0, 100)
+      && isValidString(data.customerPhone, 0, 40)
+      && isValidString(data.cashierName, 1, 100)
+      && isValidString(data.saleDate, 1, 40)
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidPurchaseRecord(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeId', 'invoiceNumber', 'supplierName', 'items', 'totalCost',
+        'paymentStatus', 'paymentMethod', 'notes', 'purchaseDate',
+        'recordedBy', 'memberEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeId', 'invoiceNumber', 'supplierName', 'items', 'totalCost',
+        'paymentStatus', 'paymentMethod', 'notes', 'purchaseDate',
+        'recordedBy', 'memberEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.id)
+      && data.id == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.invoiceNumber, 1, 40)
+      && isValidString(data.supplierName, 1, 100)
+      && data.items is list
+      && data.items.size() >= 1
+      && data.items.size() <= 50
+      && data.items[0] is map
+      && isNonNegNumber(data.totalCost)
+      && data.paymentStatus in ['Paid', 'Supplier Credit']
+      && data.paymentMethod in ['Cash', 'Bank Transfer', 'Card', 'Mobile Money', 'Supplier Credit']
+      && isValidString(data.notes, 0, 300)
+      && isValidString(data.purchaseDate, 1, 40)
+      && isValidString(data.recordedBy, 1, 100)
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidDebtRecord(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeId', 'customerName', 'customerPhone', 'saleId', 'description',
+        'totalAmount', 'paidAmount', 'balance', 'status',
+        'dueDate', 'issuedDate', 'payments', 'memberEmails',
+        'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeId', 'customerName', 'customerPhone', 'saleId', 'description',
+        'totalAmount', 'paidAmount', 'balance', 'status',
+        'dueDate', 'issuedDate', 'payments', 'memberEmails',
+        'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.id)
+      && data.id == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.customerName, 1, 100)
+      && isValidString(data.customerPhone, 0, 40)
+      && isValidString(data.saleId, 0, 64)
+      && isValidString(data.description, 0, 240)
+      && (data.totalAmount is int || data.totalAmount is float)
+      && data.totalAmount > 0
+      && isNonNegNumber(data.paidAmount)
+      && isNonNegNumber(data.balance)
+      && data.status in ['open', 'settled']
+      && isValidString(data.dueDate, 0, 40)
+      && isValidString(data.issuedDate, 1, 40)
+      && data.payments is list
+      && data.payments.size() <= 50
+      && (data.payments.size() == 0 || data.payments[0] is map)
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidStaffMember(data, docId) {
+      return data.keys().hasAll([
+        'id', 'storeId', 'name', 'role', 'status', 'memberEmails',
+        'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'id', 'storeId', 'name', 'role', 'status', 'memberEmails',
+        'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.id)
+      && data.id == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.name, 1, 100)
+      && data.role in ['Admin', 'Manager', 'Cashier']
+      && data.status in ['active', 'password_reset_required', 'revoked']
+      && isValidEmailArray(data.memberEmails, 1, 30)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidStaffPrivateInfo(data, docId) {
+      return data.keys().hasAll([
+        'staffId', 'storeId', 'email', 'phone', 'pinCode', 'lastPasswordReset',
+        'adminEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'staffId', 'storeId', 'email', 'phone', 'pinCode', 'lastPasswordReset',
+        'adminEmails', 'createdByUid', 'createdByEmail', 'createdAt', 'updatedAt'
+      ])
+      && isValidId(data.staffId)
+      && data.staffId == docId
+      && data.storeId == storeDocId()
+      && isValidString(data.email, 0, 120)
+      && isValidString(data.phone, 0, 40)
+      && isValidString(data.pinCode, 4, 20)
+      && isValidString(data.lastPasswordReset, 0, 40)
+      && isValidEmailArray(data.adminEmails, 1, 10)
+      && isValidString(data.createdByUid, 1, 128)
+      && isValidString(data.createdByEmail, 1, 120)
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    // -------------------------------------------------------------------------
+    // 0. Store Config Master Gate (Single Shared Store RBAC Directory)
+    // -------------------------------------------------------------------------
+    match /store_config/{storeId} {
+      allow get: if isVerifiedUser()
+        && storeId == storeDocId()
+        && (isBootstrappedAdmin() || (resource != null && userEmail() in existing().memberEmails));
+      allow list: if false;
+      allow create: if isBootstrappedAdmin()
+        && storeId == storeDocId()
+        && isValidStoreConfig(incoming(), storeId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser()
+        && storeId == storeDocId()
+        && isValidStoreConfig(incoming(), storeId)
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && isStoreAdmin()
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'storeName', 'adminEmails', 'managerEmails', 'cashierEmails', 'memberEmails', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. Shared Inventory Collection
+    // -------------------------------------------------------------------------
+    match /inventory/{itemId} {
+      allow get: if isVerifiedUser() && isValidId(itemId) && isStoreMember();
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().memberEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(itemId)
+        && isValidInventoryItem(incoming(), itemId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreManagerOrAdmin();
+      allow update: if isVerifiedUser()
+        && isValidId(itemId)
+        && isValidInventoryItem(incoming(), itemId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Tier 1 (Admin): Membership sync or full edit
+          (isStoreAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['memberEmails', 'updatedAt']))
+          // Tier 2 (Manager or Admin): Purchase cost/stock update or full product edit
+          || (isStoreManagerOrAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'costPrice', 'updatedAt']))
+          || (isStoreManagerOrAdmin() && incoming().diff(existing()).affectedKeys().hasOnly([
+            'sku', 'barcode', 'name', 'category', 'costPrice', 'retailPrice',
+            'quantity', 'reorderLevel', 'supplier', 'notes', 'updatedAt'
+          ]))
+          // Tier 3 (Any Authorized Staff / Cashier): POS stock deduction on sale
+          || (isStoreMember() && incoming().diff(existing()).affectedKeys().hasOnly(['quantity', 'updatedAt']))
+        );
+      allow delete: if isVerifiedUser() && isValidId(itemId) && isStoreAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. Shared Sales Collection
+    // -------------------------------------------------------------------------
+    match /sales/{saleId} {
+      allow get: if isVerifiedUser() && isValidId(saleId) && isStoreMember();
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().memberEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(saleId)
+        && isValidSaleRecord(incoming(), saleId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().status == 'completed'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreMember();
+      allow update: if isVerifiedUser()
+        && isValidId(saleId)
+        && isValidSaleRecord(incoming(), saleId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isStoreAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['memberEmails', 'updatedAt']))
+          || (isStoreManagerOrAdmin()
+              && existing().status == 'completed'
+              && incoming().status == 'voided'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+        );
+      allow delete: if isVerifiedUser() && isValidId(saleId) && isStoreAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. Shared Purchases Collection
+    // -------------------------------------------------------------------------
+    match /purchases/{purchaseId} {
+      allow get: if isVerifiedUser() && isValidId(purchaseId) && isStoreMember();
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().memberEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(purchaseId)
+        && isValidPurchaseRecord(incoming(), purchaseId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreManagerOrAdmin();
+      allow update: if isVerifiedUser()
+        && isValidId(purchaseId)
+        && isValidPurchaseRecord(incoming(), purchaseId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isStoreAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['memberEmails', 'updatedAt']))
+          || (isStoreManagerOrAdmin()
+              && existing().paymentStatus == 'Supplier Credit'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['paymentStatus', 'paymentMethod', 'notes', 'updatedAt']))
+        );
+      allow delete: if isVerifiedUser() && isValidId(purchaseId) && isStoreAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. Shared Debt / Credit Collection
+    // -------------------------------------------------------------------------
+    match /debts/{debtId} {
+      allow get: if isVerifiedUser() && isValidId(debtId) && isStoreMember();
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().memberEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(debtId)
+        && isValidDebtRecord(incoming(), debtId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreMember();
+      allow update: if isVerifiedUser()
+        && isValidId(debtId)
+        && isValidDebtRecord(incoming(), debtId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isStoreAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['memberEmails', 'updatedAt']))
+          // Any authorized staff can record repayments on open tabs (locked once settled)
+          || (isStoreMember()
+              && existing().status == 'open'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['paidAmount', 'balance', 'status', 'payments', 'updatedAt']))
+          || (isStoreManagerOrAdmin()
+              && existing().status == 'open'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['customerName', 'customerPhone', 'dueDate', 'description', 'updatedAt']))
+        );
+      allow delete: if isVerifiedUser() && isValidId(debtId) && isStoreAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. Shared Staff Operational Directory (Non-PII)
+    // -------------------------------------------------------------------------
+    match /staff_members/{staffId} {
+      allow get: if isVerifiedUser() && isValidId(staffId) && isStoreMember();
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().memberEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(staffId)
+        && isValidStaffMember(incoming(), staffId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreAdmin();
+      allow update: if isVerifiedUser()
+        && isValidId(staffId)
+        && isValidStaffMember(incoming(), staffId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && isStoreAdmin()
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['memberEmails', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['name', 'role', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['name', 'role', 'status', 'updatedAt'])
+        );
+      allow delete: if isVerifiedUser() && isValidId(staffId) && isStoreAdmin();
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. Staff Private PII Collection (Strictly Isolated to Store Admins & Self)
+    // -------------------------------------------------------------------------
+    match /staff_private/{staffId} {
+      allow get: if isVerifiedUser()
+        && isValidId(staffId)
+        && (isStoreAdmin() || existing().email == userEmail());
+      allow list: if isVerifiedUser()
+        && ((isBootstrappedAdmin() && existing().storeId == storeDocId())
+            || userEmail() in existing().adminEmails);
+      allow create: if isVerifiedUser()
+        && isValidId(staffId)
+        && isValidStaffPrivateInfo(incoming(), staffId)
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdByEmail == userEmail()
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isStoreAdmin()
+        && existsAfter(/databases/$(database)/documents/staff_members/$(staffId));
+      allow update: if isVerifiedUser()
+        && isValidId(staffId)
+        && isValidStaffPrivateInfo(incoming(), staffId)
+        && incoming().storeId == existing().storeId
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && isStoreAdmin()
+        && exists(/databases/$(database)/documents/staff_members/$(staffId))
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['adminEmails', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['phone', 'email', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['pinCode', 'lastPasswordReset', 'updatedAt'])
+          || incoming().diff(existing()).affectedKeys().hasOnly(['phone', 'email', 'pinCode', 'lastPasswordReset', 'updatedAt'])
+        );
+      allow delete: if isVerifiedUser() && isValidId(staffId) && isStoreAdmin();
+    }
+  }
+}
