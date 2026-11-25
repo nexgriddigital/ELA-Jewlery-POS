@@ -11,6 +11,7 @@ import {
   Cloud,
   LogOut,
   X,
+  Receipt,
 } from 'lucide-react';
 import { ActiveView } from '../types/pos';
 import { usePos } from '../context/PosContext';
@@ -30,6 +31,7 @@ const NAV_ITEMS: Array<{
   requiredCapability?: RoleCapability;
 }> = [
   { id: 'pos', label: 'POS Register', icon: ShoppingBag },
+  { id: 'sales', label: 'Sales Ledger', icon: Receipt },
   { id: 'inventory', label: 'Inventory', icon: Package },
   { id: 'purchases', label: 'Purchases', icon: Truck, requiredCapability: 'purchases' },
   { id: 'labels', label: 'Label Studio', icon: Tag },

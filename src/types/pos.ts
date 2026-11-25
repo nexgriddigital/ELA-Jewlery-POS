@@ -200,6 +200,7 @@ export interface DateRange {
 
 export type ActiveView =
   | 'pos'
+  | 'sales'
   | 'inventory'
   | 'purchases'
   | 'labels'

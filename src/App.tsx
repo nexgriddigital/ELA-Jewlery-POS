@@ -6,6 +6,7 @@ import { WelcomeGate } from './components/WelcomeGate';
 import { AccessPendingGate } from './components/AccessPendingGate';
 import { Sidebar } from './components/Sidebar';
 import { PosRegisterView } from './components/PosRegisterView';
+import { SalesLedgerView } from './components/SalesLedgerView';
 import { InventoryView } from './components/InventoryView';
 import { PurchasesView } from './components/PurchasesView';
 import { LabelStudioView } from './components/LabelStudioView';
@@ -17,6 +18,7 @@ import { ActiveView } from './types/pos';
 
 const VIEW_LABELS: Record<ActiveView, string> = {
   pos: 'POS Register',
+  sales: 'Sales Ledger',
   inventory: 'Inventory',
   purchases: 'Purchases',
   labels: 'Label Studio',
@@ -140,6 +142,7 @@ const PosShell: React.FC = () => {
         {/* Main Workspace Canvas */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
           {activeView === 'pos' && <PosRegisterView />}
+          {activeView === 'sales' && <SalesLedgerView />}
           {activeView === 'inventory' && <InventoryView />}
           {activeView === 'purchases' && can('purchases') && <PurchasesView />}
           {activeView === 'labels' && <LabelStudioView />}
