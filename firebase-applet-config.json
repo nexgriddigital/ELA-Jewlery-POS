@@ -1,12 +1,12 @@
 {
-  "projectId": "ela-jewelry-dbdba",
-  "appId": "1:680616141969:web:18fe3242ad52995af3cb30",
-  "apiKey": "AIzaSyCJjMnZcMeHKWUSZc4qDYhnDGFx9ciLiCc",
-  "authDomain": "ela-jewelry-dbdba.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-a8390e2c-ba7f-4af8-8a22-4d50d9150aa9",
-  "storageBucket": "ela-jewelry-dbdba.firebasestorage.app",
-  "messagingSenderId": "680616141969",
+  "projectId": "ela-jewlery",
+  "appId": "1:344657712523:web:55c3f16d97c69696cf0b8e",
+  "apiKey": "AIzaSyD6ieimrjGnX1oyQF0e4GHYVUP0p0gJ1RY",
+  "authDomain": "ela-jewlery.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-elajewlerypos-a966a346-998d-4827-912d-51f7f9cc496a",
+  "storageBucket": "ela-jewlery.firebasestorage.app",
+  "messagingSenderId": "344657712523",
   "measurementId": "",
-  "oAuthClientId": "680616141969-0o1f41nsgbgjol8m6afkin5ge53hjihq.apps.googleusercontent.com",
+  "oAuthClientId": "344657712523-u8h6q2jj0rbg4g7e274kuabriqer5qhc.apps.googleusercontent.com",
   "recaptchaSiteKey": ""
 }

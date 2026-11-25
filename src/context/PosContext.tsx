@@ -64,6 +64,7 @@ import {
   canPerformRoleAction,
   generateId,
   getTodayDateString,
+  isBootstrappedAdminEmail,
   normalizeEmail,
   resolveUserRole,
   RoleCapability,
@@ -304,7 +305,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!user) {
       return localActiveStaff?.role || 'Admin';
     }
-    if (signedInEmail === OWNER_ADMIN_EMAIL) return 'Admin';
+    if (isBootstrappedAdminEmail(signedInEmail)) return 'Admin';
     if (storeConfig) {
       const resolved = resolveUserRole(signedInEmail, storeConfig, OWNER_ADMIN_EMAIL);
       if (resolved) return resolved;
@@ -430,14 +431,15 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (cancelled) return;
 
         if (!snap.exists()) {
-          if (signedInEmail === OWNER_ADMIN_EMAIL) {
+          if (isBootstrappedAdminEmail(signedInEmail)) {
+            const initialAdmins = Array.from(new Set([OWNER_ADMIN_EMAIL, signedInEmail]));
             const initialConfig: StoreAccessConfig = {
               id: STORE_ID,
               storeName: 'ELA Jewelry',
-              adminEmails: [OWNER_ADMIN_EMAIL],
+              adminEmails: initialAdmins,
               managerEmails: [],
               cashierEmails: [],
-              memberEmails: [OWNER_ADMIN_EMAIL],
+              memberEmails: initialAdmins,
             };
             const batch = writeBatch(db);
             batch.set(configRef, {
@@ -448,10 +450,14 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             batch.set(doc(db, 'staff_members', 'staff_owner'), {
               id: 'staff_owner',
               storeId: STORE_ID,
-              name: sanitizeText(user.displayName || 'Amanuel Hailu', 100),
+              name: sanitizeText(
+                user.displayName ||
+                  (signedInEmail === OWNER_ADMIN_EMAIL ? 'Amanuel Hailu' : 'Store Owner'),
+                100
+              ),
               role: 'Admin',
               status: 'active',
-              memberEmails: [OWNER_ADMIN_EMAIL],
+              memberEmails: initialAdmins,
               createdByUid: user.uid,
               createdByEmail: signedInEmail,
               createdAt: serverTimestamp(),
@@ -460,11 +466,11 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             batch.set(doc(db, 'staff_private', 'staff_owner'), {
               staffId: 'staff_owner',
               storeId: STORE_ID,
-              email: OWNER_ADMIN_EMAIL,
+              email: signedInEmail,
               phone: '',
               pinCode: '8800',
               lastPasswordReset: '',
-              adminEmails: [OWNER_ADMIN_EMAIL],
+              adminEmails: initialAdmins,
               createdByUid: user.uid,
               createdByEmail: signedInEmail,
               createdAt: serverTimestamp(),
@@ -541,7 +547,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     setLoadingData(true);
-    const isOwner = signedInEmail === OWNER_ADMIN_EMAIL;
+    const isOwner = isBootstrappedAdminEmail(signedInEmail);
     const isAdmin = currentUserRole === 'Admin';
 
     // Single-field queries guarantee ZERO composite index errors
@@ -1799,7 +1805,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const deleteStaffMember = useCallback(
     async (staffId: string) => {
       const target = store.staff.find((m) => m.id === staffId);
-      if (target && normalizeEmail(target.email) === OWNER_ADMIN_EMAIL) {
+      if (target && isBootstrappedAdminEmail(target.email)) {
         notify('error', 'The primary store owner account cannot be deleted.');
         return;
       }
@@ -1940,18 +1946,21 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ...store.debts.map((d) => (batch: WriteBatch) => batch.delete(doc(db, 'debts', d.id))),
         ];
         if (includeStaff) {
+          const retainedAdmins = Array.from(
+            new Set([OWNER_ADMIN_EMAIL, ...(signedInEmail ? [signedInEmail] : [])])
+          );
           for (const m of store.staff) {
-            if (normalizeEmail(m.email) === OWNER_ADMIN_EMAIL) continue;
+            if (isBootstrappedAdminEmail(m.email)) continue;
             ops.push((batch) => batch.delete(doc(db, 'staff_private', m.id)));
             ops.push((batch) => batch.delete(doc(db, 'staff_members', m.id)));
           }
           ops.push((batch) =>
             batch.update(doc(db, 'store_config', STORE_ID), {
               storeName: 'ELA Jewelry',
-              adminEmails: [OWNER_ADMIN_EMAIL],
+              adminEmails: retainedAdmins,
               managerEmails: [],
               cashierEmails: [],
-              memberEmails: [OWNER_ADMIN_EMAIL],
+              memberEmails: retainedAdmins,
               updatedAt: serverTimestamp(),
             })
           );

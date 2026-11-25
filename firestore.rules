@@ -32,7 +32,7 @@ service cloud.firestore {
     }
 
     function isBootstrappedAdmin() {
-      return isVerifiedUser() && userEmail() == 'amanuealhailu007@gmail.com';
+      return isVerifiedUser() && userEmail() in ['amanuealhailu007@gmail.com', 'nexgriddigital@gmail.com'];
     }
 
     function incoming() {
@@ -105,8 +105,8 @@ service cloud.firestore {
       && isValidEmailArray(data.managerEmails, 0, 15)
       && isValidEmailArray(data.cashierEmails, 0, 25)
       && isValidEmailArray(data.memberEmails, 1, 30)
-      && 'amanuealhailu007@gmail.com' in data.adminEmails
-      && 'amanuealhailu007@gmail.com' in data.memberEmails
+      && ('amanuealhailu007@gmail.com' in data.adminEmails || 'nexgriddigital@gmail.com' in data.adminEmails)
+      && ('amanuealhailu007@gmail.com' in data.memberEmails || 'nexgriddigital@gmail.com' in data.memberEmails)
       && data.createdAt is timestamp
       && data.updatedAt is timestamp;
     }

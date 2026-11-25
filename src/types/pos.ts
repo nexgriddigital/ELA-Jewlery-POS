@@ -1,5 +1,9 @@
 export const STORE_ID = 'ela_jewelry_main';
 export const OWNER_ADMIN_EMAIL = 'amanuealhailu007@gmail.com';
+export const BOOTSTRAPPED_ADMIN_EMAILS: readonly string[] = [
+  'amanuealhailu007@gmail.com',
+  'nexgriddigital@gmail.com',
+];
 
 export type ProductCategory =
   | 'Jewelry'

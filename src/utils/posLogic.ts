@@ -1,4 +1,5 @@
 import {
+  BOOTSTRAPPED_ADMIN_EMAILS,
   DateRange,
   DebtPayment,
   DebtRecord,
@@ -540,6 +541,11 @@ export function buildStoreMembership(
   return { adminEmails, managerEmails, cashierEmails, memberEmails };
 }
 
+export function isBootstrappedAdminEmail(email: string): boolean {
+  const normalized = normalizeEmail(email);
+  return Boolean(normalized && BOOTSTRAPPED_ADMIN_EMAILS.includes(normalized));
+}
+
 export function resolveUserRole(
   email: string,
   lists: StoreMembershipLists,
@@ -547,7 +553,11 @@ export function resolveUserRole(
 ): 'Admin' | 'Manager' | 'Cashier' | null {
   const normalized = normalizeEmail(email);
   if (!normalized) return null;
-  if (normalized === normalizeEmail(ownerAdminEmail) || lists.adminEmails.includes(normalized)) {
+  if (
+    normalized === normalizeEmail(ownerAdminEmail) ||
+    isBootstrappedAdminEmail(normalized) ||
+    lists.adminEmails.includes(normalized)
+  ) {
     return 'Admin';
   }
   if (lists.managerEmails.includes(normalized)) {
