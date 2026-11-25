@@ -873,9 +873,35 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           code === 'auth/admin-restricted-operation' ||
           code === 'auth/network-request-failed';
 
-        // Check local shared terminal staff directory if Email/Password provider is not yet enabled in Firebase Console
-        // or if this terminal is operating in local shared workspace mode
         const localMatch = authenticateLocalStaff(store.staff, normalized, secret);
+
+        // If Email/Password is enabled in Firebase Console but this bootstrapped admin
+        // hasn't registered on the new Firebase project yet, provision & connect to cloud directly.
+        if (
+          localMatch.ok &&
+          isBootstrappedAdminEmail(normalized) &&
+          (code === 'auth/user-not-found' || code === 'auth/invalid-credential')
+        ) {
+          try {
+            const cred = await createUserWithEmailAndPassword(auth, normalized, authPassword);
+            await updateProfile(cred.user, { displayName: localMatch.staff.name });
+            setEnteredApp(true);
+            notify('success', 'Signed in — connected to shared ELA Jewelry cloud database.');
+            return { ok: true, mode: 'cloud' };
+          } catch (provErr) {
+            const provCode =
+              typeof provErr === 'object' && provErr !== null && 'code' in provErr
+                ? String((provErr as { code?: unknown }).code)
+                : '';
+            if (provCode === 'auth/email-already-in-use') {
+              return {
+                ok: false,
+                error: 'Incorrect password or 4-digit PIN for this cloud account.',
+              };
+            }
+          }
+        }
+
         if (localMatch.ok) {
           setActiveLocalStaffId(localMatch.staff.id);
           try {
@@ -889,8 +915,10 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
           setEnteredApp(true);
           notify(
-            'success',
-            `Signed in as ${localMatch.staff.name} (${localMatch.staff.role}) on ELA Jewelry Terminal.`
+            providerDisabled ? 'info' : 'success',
+            providerDisabled
+              ? `Signed in locally as ${localMatch.staff.name}. Enable Email/Password in Firebase Console to sync without Google Sign-In.`
+              : `Signed in as ${localMatch.staff.name} (${localMatch.staff.role}) on ELA Jewelry Terminal.`
           );
           return {
             ok: true,
