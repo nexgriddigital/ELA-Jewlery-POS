@@ -22,7 +22,7 @@ export const AccessPendingGate: React.FC = () => {
     <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-6">
       <div className="max-w-lg w-full bg-white border border-[#E8DFD3] rounded-2xl p-8 text-center space-y-5">
         <img
-          src="/assets/aistudio/image_89dfb75c.png"
+          src="./assets/aistudio/image_89dfb75c.png"
           alt="ELA Jewelry"
           className="h-20 mx-auto object-contain"
           referrerPolicy="no-referrer"

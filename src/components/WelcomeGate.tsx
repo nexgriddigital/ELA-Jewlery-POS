@@ -114,7 +114,7 @@ export const WelcomeGate: React.FC = () => {
         <div className="text-center mb-7">
           <div className="inline-flex items-center justify-center bg-white rounded-2xl p-3.5 shadow-lg border border-[#F7D87F]/60">
             <img
-              src="/assets/aistudio/image_89dfb75c.png"
+              src="./assets/aistudio/image_89dfb75c.png"
               alt="ELA Jewellery and Accessories For Him & Her"
               className="h-24 w-auto object-contain"
               referrerPolicy="no-referrer"

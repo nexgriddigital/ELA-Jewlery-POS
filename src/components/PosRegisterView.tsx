@@ -670,7 +670,7 @@ export const PosRegisterView: React.FC = () => {
 
             <div className="border border-[#E8DFD3] rounded-xl p-5 bg-[#FAF8F5]/50 text-center space-y-3">
               <img
-                src="/assets/aistudio/image_89dfb75c.png"
+                src="./assets/aistudio/image_89dfb75c.png"
                 alt="ELA Jewelry"
                 className="h-16 mx-auto object-contain"
                 referrerPolicy="no-referrer"

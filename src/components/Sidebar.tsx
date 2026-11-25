@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-11 h-11 rounded-lg bg-white p-1 flex items-center justify-center shrink-0">
             <img
-              src="/assets/aistudio/image_89dfb75c.png"
+              src="./assets/aistudio/image_89dfb75c.png"
               alt="ELA Jewelry"
               className="w-full h-full object-contain"
               referrerPolicy="no-referrer"

@@ -314,7 +314,7 @@ export const LabelStudioView: React.FC = () => {
                     <div className="flex items-start justify-between gap-2">
                       {showLogo ? (
                         <img
-                          src="/assets/aistudio/image_89dfb75c.png"
+                          src="./assets/aistudio/image_89dfb75c.png"
                           alt="ELA Jewelry"
                           className="h-8 w-auto object-contain"
                           referrerPolicy="no-referrer"

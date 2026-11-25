@@ -31,7 +31,7 @@ export class ErrorBoundary extends React.Component<
         <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-6">
           <div className="max-w-lg w-full bg-white border border-[#E8DFD3] rounded-xl p-8 text-center">
             <img
-              src="/assets/aistudio/image_89dfb75c.png"
+              src="./assets/aistudio/image_89dfb75c.png"
               alt="ELA Jewelry"
               className="h-20 mx-auto mb-5 object-contain"
               referrerPolicy="no-referrer"
