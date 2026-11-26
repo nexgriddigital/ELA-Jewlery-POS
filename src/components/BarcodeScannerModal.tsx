@@ -5,6 +5,7 @@ import {
   Camera,
   CheckCircle2,
   Flashlight,
+  ImagePlus,
   RefreshCw,
   Repeat,
   ScanLine,
@@ -236,7 +237,10 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
         if (!videoRef.current || cancelled) return;
 
-        const reader = new BrowserMultiFormatReader();
+        const reader = new BrowserMultiFormatReader(undefined, {
+          delayBetweenScanAttempts: 150,
+          delayBetweenScanSuccess: 1200,
+        });
         const controls = await reader.decodeFromStream(stream, videoRef.current, (result) => {
           if (!result || cancelled) return;
           const rawCode = result.getText().trim();
@@ -358,6 +362,43 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         outcome?.message ||
         (matched ? `Scanned ${code}` : `No item found for barcode "${code}"`),
     });
+  };
+
+  const handleImageScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const reader = new BrowserMultiFormatReader();
+      const result = await reader.decodeFromImageUrl(objectUrl);
+      const code = result.getText().trim();
+      if (!code) throw new Error('No barcode detected in image.');
+      const outcome = onScan(code);
+      const matched = outcome ? outcome.matched : true;
+      playScanBeep(matched);
+      if (matched && !continuousMode) {
+        stopActiveScanner();
+        onClose();
+        return;
+      }
+      setScanFeedback({
+        type: matched ? 'success' : 'warning',
+        code,
+        message:
+          outcome?.message ||
+          (matched ? `Scanned ${code}` : `No item found for barcode "${code}"`),
+      });
+    } catch {
+      playScanBeep(false);
+      setScanFeedback({
+        type: 'warning',
+        code: 'Unreadable',
+        message: 'Could not detect a clear barcode in that photo. Try closer framing.',
+      });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   };
 
   return (
@@ -486,14 +527,27 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             <div className="absolute inset-0 bg-[#140D0A]/95 flex flex-col items-center justify-center text-center p-5 gap-3">
               <AlertCircle className="w-8 h-8 text-[#FF8A7E]" aria-hidden="true" />
               <p className="text-xs text-[#FAF8F5] max-w-xs leading-relaxed">{cameraError}</p>
-              <button
-                type="button"
-                onClick={() => setRestartNonce((n) => n + 1)}
-                className="min-h-[40px] inline-flex items-center gap-1.5 px-4 py-2 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-xs font-semibold rounded-lg cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Retry Camera</span>
-              </button>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRestartNonce((n) => n + 1)}
+                  className="min-h-[40px] inline-flex items-center gap-1.5 px-4 py-2 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-xs font-semibold rounded-lg cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Retry Camera</span>
+                </button>
+                <label className="min-h-[40px] inline-flex items-center gap-1.5 px-4 py-2 bg-[#231712] hover:bg-[#3A271F] border border-[#F7D87F]/40 text-[#F7D87F] text-xs font-semibold rounded-lg cursor-pointer">
+                  <ImagePlus className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Scan Photo</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleImageScan}
+                    className="sr-only"
+                  />
+                </label>
+              </div>
             </div>
           )}
         </div>
@@ -566,6 +620,20 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             >
               Submit
             </button>
+            <label
+              title="Scan barcode from photo or camera snapshot"
+              className="min-h-[40px] px-3 py-2 inline-flex items-center justify-center gap-1.5 bg-[#FAF8F5] hover:bg-[#F8EBAB]/50 border border-[#E8DFD3] text-[#231712] text-xs font-semibold rounded-lg cursor-pointer shrink-0 whitespace-nowrap"
+            >
+              <ImagePlus className="w-3.5 h-3.5 text-[#BE1A1A]" aria-hidden="true" />
+              <span className="hidden sm:inline">Photo</span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageScan}
+                className="sr-only"
+              />
+            </label>
           </form>
         </div>
       </div>

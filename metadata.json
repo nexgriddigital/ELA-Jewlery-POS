@@ -1,6 +1,6 @@
 {
   "name": "ELA Jewelry POS",
   "description": "Cross-device real-time Point of Sale, inventory management, label studio, financial reporting, credit ledger, and staff administration for ELA Jewelry.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

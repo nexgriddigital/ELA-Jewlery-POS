@@ -434,12 +434,17 @@ export const PosRegisterView: React.FC = () => {
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={handleBarcodeEnter}
                   placeholder="Search jewelry, perfume, SKU or barcode..."
-                  className="w-full pl-10 pr-9 py-2.5 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
+                  className="w-full pl-10 pr-11 py-2.5 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
                 />
-                <ScanLine
-                  className="w-4 h-4 text-[#BE1A1A] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  aria-hidden="true"
-                />
+                <button
+                  type="button"
+                  onClick={() => setScannerOpen(true)}
+                  aria-label="Scan barcode with camera"
+                  title="Scan barcode with camera"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md text-[#BE1A1A] hover:bg-[#FCE8E6] transition-colors cursor-pointer"
+                >
+                  <ScanLine className="w-4 h-4" aria-hidden="true" />
+                </button>
               </div>
 
               <button
