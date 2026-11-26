@@ -16,6 +16,7 @@ import {
   Gem,
   ShoppingBag,
   ArrowDown,
+  Camera,
 } from 'lucide-react';
 import { usePos } from '../context/PosContext';
 import {
@@ -27,6 +28,7 @@ import {
   SaleRecord,
 } from '../types/pos';
 import { computeCartTotals, formatCurrency, getTodayDateString } from '../utils/posLogic';
+import { BarcodeScannerModal, BarcodeScanOutcome } from './BarcodeScannerModal';
 
 const ProductCardImage: React.FC<{ src?: string; alt: string }> = ({ src, alt }) => {
   const [failed, setFailed] = useState(false);
@@ -85,6 +87,7 @@ export const PosRegisterView: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [completedReceipt, setCompletedReceipt] = useState<SaleRecord | null>(null);
   const [showRecentSales, setShowRecentSales] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const filteredInventory = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -167,6 +170,40 @@ export const PosRegisterView: React.FC = () => {
       addToCart(exactMatch);
       setSearch('');
     }
+  };
+
+  const handleCameraBarcodeScan = (code: string): BarcodeScanOutcome => {
+    const q = code.trim().toLowerCase();
+    const match = inventory.find(
+      (i) => i.barcode.toLowerCase() === q || i.sku.toLowerCase() === q
+    );
+    if (!match) {
+      return {
+        matched: false,
+        message: `No catalog item found for barcode "${code}".`,
+      };
+    }
+    if (match.quantity <= 0) {
+      notify('error', `"${match.name}" is out of stock.`);
+      return {
+        matched: false,
+        message: `"${match.name}" is out of stock.`,
+      };
+    }
+    const inCart = cart.find((c) => c.itemId === match.id)?.quantity ?? 0;
+    if (inCart >= match.quantity) {
+      notify('error', `Only ${match.quantity} unit(s) of "${match.name}" available.`);
+      return {
+        matched: false,
+        message: `Stock limit reached (${match.quantity} available) for "${match.name}".`,
+      };
+    }
+    addToCart(match);
+    notify('success', `Added "${match.name}" to cart.`);
+    return {
+      matched: true,
+      message: `Added ${match.name} (${formatCurrency(match.retailPrice)})`,
+    };
   };
 
   const handleCompleteSale = async (e: React.FormEvent) => {
@@ -381,27 +418,39 @@ export const PosRegisterView: React.FC = () => {
         <div className="xl:col-span-8 space-y-4">
           {/* Search & Barcode Bar */}
           <div className="bg-white border border-[#E8DFD3] rounded-xl p-3 sm:p-4 space-y-3">
-            <div className="relative">
-              <Search
-                className="w-4 h-4 text-[#766257] absolute left-3.5 top-1/2 -translate-y-1/2"
-                aria-hidden="true"
-              />
-              <label htmlFor="pos-catalog-search" className="sr-only">
-                Search catalog or scan barcode
-              </label>
-              <input
-                id="pos-catalog-search"
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleBarcodeEnter}
-                placeholder="Search jewelry, perfume, SKU or barcode..."
-                className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
-              />
-              <ScanLine
-                className="w-4 h-4 text-[#BE1A1A] absolute right-3.5 top-1/2 -translate-y-1/2"
-                aria-hidden="true"
-              />
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 min-w-0">
+                <Search
+                  className="w-4 h-4 text-[#766257] absolute left-3.5 top-1/2 -translate-y-1/2"
+                  aria-hidden="true"
+                />
+                <label htmlFor="pos-catalog-search" className="sr-only">
+                  Search catalog or scan barcode
+                </label>
+                <input
+                  id="pos-catalog-search"
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={handleBarcodeEnter}
+                  placeholder="Search jewelry, perfume, SKU or barcode..."
+                  className="w-full pl-10 pr-9 py-2.5 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
+                />
+                <ScanLine
+                  className="w-4 h-4 text-[#BE1A1A] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setScannerOpen(true)}
+                aria-label="Open camera barcode scanner"
+                className="min-h-[44px] px-3 sm:px-3.5 py-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#231712] hover:bg-[#3A271F] text-[#F7D87F] text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+              >
+                <Camera className="w-4 h-4" aria-hidden="true" />
+                <span>Scan</span>
+              </button>
             </div>
 
             {/* Category Segmented Filter */}
@@ -877,6 +926,14 @@ export const PosRegisterView: React.FC = () => {
           </div>
         </div>
       )}
+      <BarcodeScannerModal
+        open={scannerOpen}
+        title="Scan Item Barcode"
+        subtitle="Select a camera and align the barcode to add directly to the sale"
+        allowContinuousMode
+        onClose={() => setScannerOpen(false)}
+        onScan={handleCameraBarcodeScan}
+      />
     </div>
   );
 };

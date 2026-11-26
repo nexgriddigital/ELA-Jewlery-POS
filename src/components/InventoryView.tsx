@@ -1,8 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Plus, Search, Pencil, Trash2, SlidersHorizontal, X, Image as ImageIcon, Upload } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  SlidersHorizontal,
+  X,
+  Image as ImageIcon,
+  Upload,
+  Camera,
+} from 'lucide-react';
 import { usePos } from '../context/PosContext';
 import { InventoryItem, PRODUCT_CATEGORIES, ProductCategory } from '../types/pos';
 import { calculateInventoryValuation, formatCurrency } from '../utils/posLogic';
+import { BarcodeScannerModal } from './BarcodeScannerModal';
 
 interface ItemFormState {
   sku: string;
@@ -125,6 +136,7 @@ export const InventoryView: React.FC = () => {
 
   const [adjustItem, setAdjustItem] = useState<InventoryItem | null>(null);
   const [adjustDelta, setAdjustDelta] = useState('1');
+  const [scannerTarget, setScannerTarget] = useState<'search' | 'form' | null>(null);
 
   const valuation = useMemo(() => calculateInventoryValuation(inventory), [inventory]);
 
@@ -305,22 +317,33 @@ export const InventoryView: React.FC = () => {
 
       {/* Filters */}
       <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 sm:gap-3">
-        <div className="relative flex-1 min-w-0 sm:min-w-[220px]">
-          <Search
-            className="w-4 h-4 text-[#766257] absolute left-3 top-1/2 -translate-y-1/2"
-            aria-hidden="true"
-          />
-          <label htmlFor="inventory-search" className="sr-only">
-            Search inventory
-          </label>
-          <input
-            id="inventory-search"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by item name, SKU, barcode, or supplier..."
-            className="w-full pl-9 pr-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
-          />
+        <div className="flex items-center gap-2 flex-1 min-w-0 sm:min-w-[240px]">
+          <div className="relative flex-1 min-w-0">
+            <Search
+              className="w-4 h-4 text-[#766257] absolute left-3 top-1/2 -translate-y-1/2"
+              aria-hidden="true"
+            />
+            <label htmlFor="inventory-search" className="sr-only">
+              Search inventory
+            </label>
+            <input
+              id="inventory-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by item name, SKU, barcode, or supplier..."
+              className="w-full pl-9 pr-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setScannerTarget('search')}
+            aria-label="Scan barcode to search inventory"
+            className="min-h-[42px] px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#231712] hover:bg-[#3A271F] text-[#F7D87F] text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+          >
+            <Camera className="w-4 h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">Scan</span>
+          </button>
         </div>
 
         <label htmlFor="inventory-category-filter" className="sr-only">
@@ -656,13 +679,24 @@ export const InventoryView: React.FC = () => {
                 <label htmlFor="inv-barcode" className="block text-xs font-semibold text-[#231712] mb-1">
                   Barcode
                 </label>
-                <input
-                  id="inv-barcode"
-                  type="text"
-                  value={form.barcode}
-                  onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                  className="w-full px-3 py-2 text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
-                />
+                <div className="flex items-center gap-1.5">
+                  <input
+                    id="inv-barcode"
+                    type="text"
+                    value={form.barcode}
+                    onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                    className="flex-1 min-w-0 px-3 py-2 text-base sm:text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setScannerTarget('form')}
+                    aria-label="Scan barcode using camera"
+                    title="Scan Barcode"
+                    className="min-w-[42px] min-h-[40px] px-2.5 inline-flex items-center justify-center rounded-lg bg-[#231712] hover:bg-[#3A271F] text-[#F7D87F] cursor-pointer shrink-0"
+                  >
+                    <Camera className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -903,6 +937,35 @@ export const InventoryView: React.FC = () => {
           </form>
         </div>
       )}
+      <BarcodeScannerModal
+        open={scannerTarget !== null}
+        title={scannerTarget === 'form' ? 'Scan Product Barcode' : 'Find Item by Barcode'}
+        subtitle={
+          scannerTarget === 'form'
+            ? 'Choose a camera to capture the item barcode automatically'
+            : 'Choose a camera to look up a product in inventory'
+        }
+        onClose={() => setScannerTarget(null)}
+        onScan={(code) => {
+          if (scannerTarget === 'form') {
+            setForm((prev) => ({ ...prev, barcode: code }));
+            notify('success', `Barcode "${code}" captured.`);
+            return { matched: true, message: `Captured barcode ${code}` };
+          }
+          setSearch(code);
+          const found = inventory.find(
+            (it) =>
+              it.barcode.toLowerCase() === code.toLowerCase() ||
+              it.sku.toLowerCase() === code.toLowerCase()
+          );
+          if (found) {
+            notify('success', `Filtered inventory to "${found.name}".`);
+            return { matched: true, message: `Found ${found.name}` };
+          }
+          notify('info', `Filtered inventory by "${code}".`);
+          return { matched: true, message: `Filtered by ${code}` };
+        }}
+      />
     </div>
   );
 };
