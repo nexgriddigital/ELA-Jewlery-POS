@@ -108,19 +108,19 @@ export const WelcomeGate: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#140D0A] text-[#FAF8F5] flex flex-col justify-between px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-dvh bg-[#140D0A] text-[#FAF8F5] flex flex-col justify-between px-4 py-6 sm:py-8 sm:px-6 lg:px-10 pb-safe">
       <div className="max-w-md w-full mx-auto my-auto">
         {/* ELA Jewelry Brand Header */}
-        <div className="text-center mb-7">
-          <div className="inline-flex items-center justify-center bg-white rounded-2xl p-3.5 shadow-lg border border-[#F7D87F]/60">
+        <div className="text-center mb-5 sm:mb-7">
+          <div className="inline-flex items-center justify-center bg-white rounded-2xl p-3 sm:p-3.5 shadow-lg border border-[#F7D87F]/60">
             <img
               src="./assets/aistudio/image_89dfb75c.png"
               alt="ELA Jewellery and Accessories For Him & Her"
-              className="h-24 w-auto object-contain"
+              className="h-20 sm:h-24 w-auto object-contain"
               referrerPolicy="no-referrer"
             />
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-[#FAF8F5] mt-5 tracking-tight">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-[#FAF8F5] mt-4 sm:mt-5 tracking-tight">
             ELA Jewelry Terminal
           </h1>
           <p className="text-xs text-[#C8B9AE] mt-1">
@@ -129,9 +129,9 @@ export const WelcomeGate: React.FC = () => {
         </div>
 
         {/* Main Terminal Auth Card */}
-        <div className="bg-[#1C1410] border border-[#3A2A22] rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-[#1C1410] border border-[#3A2A22] rounded-2xl p-5 sm:p-8 shadow-2xl">
           {mode === 'signin' ? (
-            <form onSubmit={handleSignIn} className="space-y-5" noValidate>
+            <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5" noValidate>
               {/* Staff Email Address */}
               <div>
                 <label
@@ -153,7 +153,7 @@ export const WelcomeGate: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="e.g. owner@elajewelry.store"
-                    className="w-full pl-10 pr-4 py-3 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -179,13 +179,13 @@ export const WelcomeGate: React.FC = () => {
                     value={secret}
                     onChange={(e) => setSecret(e.target.value)}
                     placeholder="Enter password or 4-digit PIN..."
-                    className="w-full pl-10 pr-11 py-3 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none transition-colors"
+                    className="w-full pl-10 pr-12 py-3 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowSecret((prev) => !prev)}
                     aria-label={showSecret ? 'Hide password or PIN' : 'Show password or PIN'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#9E8B7E] hover:text-[#F8EBAB] cursor-pointer transition-colors"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[40px] min-h-[40px] flex items-center justify-center text-[#9E8B7E] hover:text-[#F8EBAB] cursor-pointer transition-colors"
                   >
                     {showSecret ? (
                       <EyeOff className="w-4 h-4" aria-hidden="true" />
@@ -254,7 +254,7 @@ export const WelcomeGate: React.FC = () => {
               </button>
 
               {/* Footer Action Row: First-Time Store Setup & Refresh Cloud */}
-              <div className="pt-4 border-t border-[#2E211A] flex items-center justify-between gap-3 text-xs">
+              <div className="pt-3 border-t border-[#2E211A] flex items-center justify-between gap-3 text-xs">
                 <button
                   type="button"
                   onClick={() => {
@@ -262,7 +262,7 @@ export const WelcomeGate: React.FC = () => {
                     setShowConsoleHint(false);
                     setMode('setup');
                   }}
-                  className="text-[#E8DDD4] hover:text-[#F7D87F] font-medium transition-colors cursor-pointer"
+                  className="min-h-[44px] text-[#E8DDD4] hover:text-[#F7D87F] font-medium transition-colors cursor-pointer"
                 >
                   First-Time Store Setup
                 </button>
@@ -271,7 +271,7 @@ export const WelcomeGate: React.FC = () => {
                   type="button"
                   onClick={handleRefreshCloud}
                   disabled={refreshingCloud}
-                  className="inline-flex items-center gap-1.5 text-[#E8DDD4] hover:text-[#F7D87F] font-medium transition-colors cursor-pointer disabled:opacity-60"
+                  className="min-h-[44px] inline-flex items-center gap-1.5 text-[#E8DDD4] hover:text-[#F7D87F] font-medium transition-colors cursor-pointer disabled:opacity-60"
                 >
                   <RefreshCw
                     className={`w-3.5 h-3.5 ${refreshingCloud ? 'animate-spin' : ''}`}
@@ -297,7 +297,7 @@ export const WelcomeGate: React.FC = () => {
                     setErrorMsg(null);
                     setMode('signin');
                   }}
-                  className="inline-flex items-center gap-1 text-xs text-[#C8B9AE] hover:text-[#F7D87F] cursor-pointer"
+                  className="min-h-[40px] px-2 inline-flex items-center gap-1 text-xs text-[#C8B9AE] hover:text-[#F7D87F] cursor-pointer shrink-0"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Back</span>
@@ -323,7 +323,7 @@ export const WelcomeGate: React.FC = () => {
                     value={ownerName}
                     onChange={(e) => setOwnerName(e.target.value)}
                     placeholder="e.g. Amanuel Hailu"
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
                   />
                 </div>
               </div>
@@ -348,7 +348,7 @@ export const WelcomeGate: React.FC = () => {
                       value={setupEmail}
                       onChange={(e) => setSetupEmail(e.target.value)}
                       placeholder="owner@elajewelry.store"
-                      className="w-full pl-9 pr-3 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
+                      className="w-full pl-9 pr-3 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export const WelcomeGate: React.FC = () => {
                       value={setupPhone}
                       onChange={(e) => setSetupPhone(e.target.value)}
                       placeholder="+251-911-000100"
-                      className="w-full pl-9 pr-3 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
+                      className="w-full pl-9 pr-3 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -396,13 +396,13 @@ export const WelcomeGate: React.FC = () => {
                     value={setupSecret}
                     onChange={(e) => setSetupSecret(e.target.value)}
                     placeholder="4-digit PIN (e.g. 8800) or 6+ char password"
-                    className="w-full pl-10 pr-11 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
+                    className="w-full pl-10 pr-12 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowSetupSecret((p) => !p)}
                     aria-label={showSetupSecret ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#9E8B7E] hover:text-[#F8EBAB] cursor-pointer"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[40px] min-h-[40px] flex items-center justify-center text-[#9E8B7E] hover:text-[#F8EBAB] cursor-pointer"
                   >
                     {showSetupSecret ? (
                       <EyeOff className="w-4 h-4" aria-hidden="true" />
@@ -432,7 +432,7 @@ export const WelcomeGate: React.FC = () => {
                     value={setupConfirmSecret}
                     onChange={(e) => setSetupConfirmSecret(e.target.value)}
                     placeholder="Re-enter password or 4-digit PIN"
-                    className="w-full pl-10 pr-4 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#140D0A] border border-[#3E2E26] focus:border-[#F7D87F] rounded-xl text-base sm:text-sm text-[#FAF8F5] placeholder:text-[#7A685D] focus:outline-none"
                   />
                 </div>
               </div>
@@ -450,7 +450,7 @@ export const WelcomeGate: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:opacity-60 text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
+                className="w-full min-h-[46px] flex items-center justify-center gap-2 px-5 py-3 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:opacity-60 text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
               >
                 <LogIn className="w-4 h-4" aria-hidden="true" />
                 <span>{submitting ? 'Setting Up Store...' : 'Initialize Owner Account'}</span>
@@ -463,7 +463,7 @@ export const WelcomeGate: React.FC = () => {
             <button
               type="button"
               onClick={signInWithGoogle}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#261B15] hover:bg-[#32241C] border border-[#F7D87F]/30 text-[#F8EBAB] text-xs font-medium rounded-xl transition-colors cursor-pointer"
+              className="w-full min-h-[44px] flex items-center justify-center gap-2 px-4 py-2.5 bg-[#261B15] hover:bg-[#32241C] border border-[#F7D87F]/30 text-[#F8EBAB] text-xs font-medium rounded-xl transition-colors cursor-pointer"
             >
               <Cloud className="w-3.5 h-3.5 text-[#F7D87F]" aria-hidden="true" />
               <span>Continue with Google Cloud Sync</span>

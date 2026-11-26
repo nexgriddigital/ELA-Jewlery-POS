@@ -6,7 +6,7 @@ import { PosProvider, usePos } from './context/PosContext';
 import { WelcomeGate } from './components/WelcomeGate';
 import { WelcomeLoadingScreen } from './components/WelcomeLoadingScreen';
 import { AccessPendingGate } from './components/AccessPendingGate';
-import { Sidebar } from './components/Sidebar';
+import { Sidebar, MobileBottomNav } from './components/Sidebar';
 import { PosRegisterView } from './components/PosRegisterView';
 import { SalesLedgerView } from './components/SalesLedgerView';
 import { InventoryView } from './components/InventoryView';
@@ -97,7 +97,7 @@ const PosShell: React.FC = () => {
   const showWorkspaceLoader = loadingData || welcomeTransitionActive;
 
   return (
-    <div className="min-h-screen flex bg-[#FAF8F5] text-[#231712]">
+    <div className="min-h-dvh flex bg-[#FAF8F5] text-[#231712]">
       <AnimatePresence>
         {showWorkspaceLoader && (
           <WelcomeLoadingScreen
@@ -121,13 +121,13 @@ const PosShell: React.FC = () => {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar Contract: Breadcrumb Left — Shared Store & Operator Context Right */}
-        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#E8DFD3] px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4 no-print">
-          <div className="flex items-center gap-3 min-w-0">
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#E8DFD3] px-3.5 sm:px-6 lg:px-8 h-11 sm:h-14 flex items-center justify-between gap-3 no-print">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open navigation menu"
-              className="lg:hidden p-2 -ml-2 rounded-lg text-[#231712] hover:bg-[#FAF8F5] cursor-pointer"
+              className="lg:hidden min-w-[40px] min-h-[40px] -ml-2 flex items-center justify-center rounded-lg text-[#231712] hover:bg-[#FAF8F5] cursor-pointer shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -170,7 +170,7 @@ const PosShell: React.FC = () => {
         </header>
 
         {/* Main Workspace Canvas */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-8 max-w-[1440px] w-full mx-auto">
           {activeView === 'pos' && <PosRegisterView />}
           {activeView === 'sales' && <SalesLedgerView />}
           {activeView === 'inventory' && <InventoryView />}
@@ -183,12 +183,19 @@ const PosShell: React.FC = () => {
         </main>
       </div>
 
+      {/* Thumb-Zone Mobile Bottom Tab Navigation */}
+      <MobileBottomNav
+        activeView={activeView}
+        onSelectView={setActiveView}
+        onOpenMore={() => setMobileMenuOpen(true)}
+      />
+
       {/* Live Toast Feedback */}
       {toast && (
         <div
           role="status"
           aria-live="polite"
-          className={`fixed bottom-5 left-4 right-4 sm:left-auto sm:right-5 z-50 sm:max-w-md px-4 py-3 rounded-xl border shadow-lg flex items-center justify-between gap-3 text-sm no-print ${
+          className={`fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] lg:bottom-5 left-3.5 right-3.5 sm:left-auto sm:right-5 z-50 sm:max-w-md px-4 py-3 rounded-xl border shadow-lg flex items-center justify-between gap-3 text-sm no-print ${
             toast.kind === 'error'
               ? 'bg-[#BE1A1A] border-[#D0311E] text-white'
               : toast.kind === 'success'
@@ -201,7 +208,7 @@ const PosShell: React.FC = () => {
             type="button"
             onClick={dismissToast}
             aria-label="Dismiss notification"
-            className="p-1 opacity-75 hover:opacity-100 cursor-pointer"
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center -mr-1.5 opacity-75 hover:opacity-100 cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>

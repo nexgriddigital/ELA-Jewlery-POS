@@ -143,13 +143,13 @@ export const PurchasesView: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Supplier Purchases &amp; Restocking
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Record incoming stock shipments · Inventory counts &amp; weighted cost update automatically
           </p>
         </div>
@@ -157,7 +157,7 @@ export const PurchasesView: React.FC = () => {
           type="button"
           onClick={openModal}
           disabled={inventory.length === 0}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:bg-[#D5C9BE] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:bg-[#D5C9BE] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
         >
           <Plus className="w-4 h-4" aria-hidden="true" />
           <span>Record Purchase</span>
@@ -165,28 +165,28 @@ export const PurchasesView: React.FC = () => {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
-          <p className="text-xs text-[#766257]">Total Purchase Orders</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#231712] mt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
+          <p className="text-xs text-[#766257]">Purchase Orders</p>
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#231712] mt-1">
             {purchases.length}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
-          <p className="text-xs text-[#766257]">Total Procurement Spend</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#231712] mt-1">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
+          <p className="text-xs text-[#766257]">Procurement Spend</p>
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#231712] mt-1">
             {formatCurrency(totalSpend)}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="col-span-2 sm:col-span-1 bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Outstanding Supplier Credit</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#D0311E] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#D0311E] mt-1">
             {formatCurrency(unpaidCredit)}
           </p>
         </div>
       </div>
 
-      {/* Purchase Ledger Table */}
+      {/* Purchase Ledger Cards (Mobile) & Table (Desktop) */}
       <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
         {purchases.length === 0 ? (
           <div className="p-10 text-center text-sm text-[#766257]">
@@ -194,36 +194,38 @@ export const PurchasesView: React.FC = () => {
             inventory.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Invoice #</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Supplier</th>
-                  <th className="px-4 py-3 font-medium">Items Restocked</th>
-                  <th className="px-4 py-3 font-medium">Payment</th>
-                  <th className="px-4 py-3 font-medium text-right">Total Cost</th>
-                  <th className="px-4 py-3 font-medium text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E8DFD3]">
-                {purchases.map((po) => (
-                  <tr key={po.id} className="hover:bg-[#FAF8F5]/75">
-                    <td className="px-4 py-3 font-mono text-xs font-semibold text-[#231712] whitespace-nowrap">
-                      {po.invoiceNumber}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-[#766257] whitespace-nowrap">
-                      {po.purchaseDate}
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-[#231712]">{po.supplierName}</p>
-                      {po.notes && <p className="text-xs text-[#766257]">{po.notes}</p>}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-[#5C493F]">
-                      {po.items.map((li) => `${li.name} (+${li.quantity})`).join(' · ')}
-                    </td>
-                    <td className="px-4 py-3 text-xs whitespace-nowrap">
+          <>
+            {/* Mobile Purchase Cards */}
+            <ul className="md:hidden divide-y divide-[#E8DFD3]">
+              {purchases.map((po) => (
+                <li key={po.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="font-mono font-semibold text-[#231712]">
+                          {po.invoiceNumber}
+                        </span>
+                        <span className="text-[#C8B9AE]" aria-hidden="true">
+                          ·
+                        </span>
+                        <span className="font-mono text-[#766257]">{po.purchaseDate}</span>
+                      </div>
+                      <p className="text-sm font-semibold text-[#231712] mt-0.5 truncate">
+                        {po.supplierName}
+                      </p>
+                      {po.notes && <p className="text-xs text-[#766257] mt-0.5">{po.notes}</p>}
+                    </div>
+                    <span className="font-mono tabular-nums text-base font-semibold text-[#231712] shrink-0">
+                      {formatCurrency(po.totalCost)}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-[#5C493F]">
+                    {po.items.map((li) => `${li.name} (+${li.quantity})`).join(' · ')}
+                  </p>
+
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <span className="text-xs">
                       <span
                         className={
                           po.paymentStatus === 'Paid'
@@ -234,30 +236,92 @@ export const PurchasesView: React.FC = () => {
                         {po.paymentStatus}
                       </span>
                       <span className="text-[#766257]"> · {po.paymentMethod}</span>
-                    </td>
-                    <td className="px-4 py-3 font-mono tabular-nums text-right font-semibold text-[#231712]">
-                      {formatCurrency(po.totalCost)}
-                    </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      {po.paymentStatus === 'Supplier Credit' ? (
-                        <button
-                          type="button"
-                          onClick={() => settleSupplierPurchase(po.id, 'Bank Transfer')}
-                          aria-label={`Mark purchase ${po.invoiceNumber} as paid`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#BE1A1A] hover:text-[#D0311E] cursor-pointer"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
-                          <span>Mark Paid</span>
-                        </button>
-                      ) : (
-                        <span className="text-xs text-[#766257]">Settled</span>
-                      )}
-                    </td>
+                    </span>
+
+                    {po.paymentStatus === 'Supplier Credit' ? (
+                      <button
+                        type="button"
+                        onClick={() => settleSupplierPurchase(po.id, 'Bank Transfer')}
+                        aria-label={`Mark purchase ${po.invoiceNumber} as paid`}
+                        className="min-h-[38px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#BE1A1A]/35 text-xs font-semibold text-[#BE1A1A] hover:bg-[#FCE8E6] cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Mark Paid</span>
+                      </button>
+                    ) : (
+                      <span className="text-xs text-[#766257]">Settled</span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">Invoice #</th>
+                    <th className="px-4 py-3 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium">Supplier</th>
+                    <th className="px-4 py-3 font-medium">Items Restocked</th>
+                    <th className="px-4 py-3 font-medium">Payment</th>
+                    <th className="px-4 py-3 font-medium text-right">Total Cost</th>
+                    <th className="px-4 py-3 font-medium text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#E8DFD3]">
+                  {purchases.map((po) => (
+                    <tr key={po.id} className="hover:bg-[#FAF8F5]/75">
+                      <td className="px-4 py-3 font-mono text-xs font-semibold text-[#231712] whitespace-nowrap">
+                        {po.invoiceNumber}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-[#766257] whitespace-nowrap">
+                        {po.purchaseDate}
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-[#231712]">{po.supplierName}</p>
+                        {po.notes && <p className="text-xs text-[#766257]">{po.notes}</p>}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-[#5C493F]">
+                        {po.items.map((li) => `${li.name} (+${li.quantity})`).join(' · ')}
+                      </td>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap">
+                        <span
+                          className={
+                            po.paymentStatus === 'Paid'
+                              ? 'text-[#16A34A] font-semibold'
+                              : 'text-[#D0311E] font-semibold'
+                          }
+                        >
+                          {po.paymentStatus}
+                        </span>
+                        <span className="text-[#766257]"> · {po.paymentMethod}</span>
+                      </td>
+                      <td className="px-4 py-3 font-mono tabular-nums text-right font-semibold text-[#231712]">
+                        {formatCurrency(po.totalCost)}
+                      </td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        {po.paymentStatus === 'Supplier Credit' ? (
+                          <button
+                            type="button"
+                            onClick={() => settleSupplierPurchase(po.id, 'Bank Transfer')}
+                            aria-label={`Mark purchase ${po.invoiceNumber} as paid`}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#BE1A1A] hover:text-[#D0311E] cursor-pointer"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>Mark Paid</span>
+                          </button>
+                        ) : (
+                          <span className="text-xs text-[#766257]">Settled</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -267,11 +331,11 @@ export const PurchasesView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="purchase-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleSubmit}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-2xl w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2
@@ -352,17 +416,17 @@ export const PurchasesView: React.FC = () => {
               {lines.map((line, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-12 gap-2 items-center bg-[#FAF8F5] p-2.5 rounded-lg border border-[#E8DFD3]"
+                  className="grid grid-cols-12 gap-2 items-end sm:items-center bg-[#FAF8F5] p-2.5 rounded-lg border border-[#E8DFD3]"
                 >
                   <div className="col-span-12 sm:col-span-6">
-                    <label htmlFor={`po-item-${idx}`} className="sr-only">
+                    <label htmlFor={`po-item-${idx}`} className="block text-[11px] font-medium text-[#5C493F] mb-1 sm:sr-only">
                       Product
                     </label>
                     <select
                       id={`po-item-${idx}`}
                       value={line.itemId}
                       onChange={(e) => updateLine(idx, { itemId: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-[#E8DFD3] rounded-md"
+                      className="w-full px-2.5 py-2 sm:py-1.5 text-xs bg-white border border-[#E8DFD3] rounded-md"
                     >
                       {inventory.map((it) => (
                         <option key={it.id} value={it.id}>
@@ -372,8 +436,8 @@ export const PurchasesView: React.FC = () => {
                     </select>
                   </div>
                   <div className="col-span-5 sm:col-span-2">
-                    <label htmlFor={`po-qty-${idx}`} className="sr-only">
-                      Quantity
+                    <label htmlFor={`po-qty-${idx}`} className="block text-[11px] font-medium text-[#5C493F] mb-1 sm:sr-only">
+                      Qty
                     </label>
                     <input
                       id={`po-qty-${idx}`}
@@ -382,12 +446,12 @@ export const PurchasesView: React.FC = () => {
                       value={line.quantity}
                       onChange={(e) => updateLine(idx, { quantity: e.target.value })}
                       placeholder="Qty"
-                      className="w-full px-2.5 py-1.5 text-xs font-mono tabular-nums bg-white border border-[#E8DFD3] rounded-md"
+                      className="w-full px-2.5 py-2 sm:py-1.5 text-sm sm:text-xs font-mono tabular-nums bg-white border border-[#E8DFD3] rounded-md"
                     />
                   </div>
                   <div className="col-span-5 sm:col-span-3">
-                    <label htmlFor={`po-cost-${idx}`} className="sr-only">
-                      Unit Cost
+                    <label htmlFor={`po-cost-${idx}`} className="block text-[11px] font-medium text-[#5C493F] mb-1 sm:sr-only">
+                      Unit Cost ($)
                     </label>
                     <input
                       id={`po-cost-${idx}`}
@@ -397,15 +461,15 @@ export const PurchasesView: React.FC = () => {
                       value={line.unitCost}
                       onChange={(e) => updateLine(idx, { unitCost: e.target.value })}
                       placeholder="Unit Cost $"
-                      className="w-full px-2.5 py-1.5 text-xs font-mono tabular-nums bg-white border border-[#E8DFD3] rounded-md"
+                      className="w-full px-2.5 py-2 sm:py-1.5 text-sm sm:text-xs font-mono tabular-nums bg-white border border-[#E8DFD3] rounded-md"
                     />
                   </div>
-                  <div className="col-span-2 sm:col-span-1 text-right">
+                  <div className="col-span-2 sm:col-span-1 flex justify-end">
                     <button
                       type="button"
                       onClick={() => removeLine(idx)}
                       aria-label={`Remove purchase line ${idx + 1}`}
-                      className="p-1 text-[#766257] hover:text-[#BE1A1A] cursor-pointer"
+                      className="min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 flex items-center justify-center p-1.5 text-[#766257] hover:text-[#BE1A1A] cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -464,32 +528,32 @@ export const PurchasesView: React.FC = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Optional reference, freight note, or wholesale terms"
-                  className="w-full px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                  className="w-full px-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex items-center justify-between gap-3">
-              <div>
+            <div className="pt-3 border-t border-[#E8DFD3] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center justify-between sm:block">
                 <p className="text-xs text-[#766257]">Total Purchase Cost</p>
                 <p className="font-mono tabular-nums text-lg font-bold text-[#BE1A1A]">
                   {formatCurrency(draftTotal)}
                 </p>
               </div>
-              <div className="flex gap-2.5">
+              <div className="grid grid-cols-2 sm:flex gap-2.5">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                  className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                  className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer whitespace-nowrap"
                 >
-                  {submitting ? 'Saving...' : 'Confirm Purchase & Restock'}
+                  {submitting ? 'Saving...' : 'Confirm Purchase'}
                 </button>
               </div>
             </div>

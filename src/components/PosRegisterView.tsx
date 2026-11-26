@@ -14,6 +14,8 @@ import {
   ScanLine,
   X,
   Gem,
+  ShoppingBag,
+  ArrowDown,
 } from 'lucide-react';
 import { usePos } from '../context/PosContext';
 import {
@@ -35,14 +37,14 @@ const ProductCardImage: React.FC<{ src?: string; alt: string }> = ({ src, alt })
 
   if (!src || failed) {
     return (
-      <div className="h-36 w-full rounded-lg bg-[#FAF8F5] border border-[#F0E9DF] mb-3 flex items-center justify-center text-[#C8B9AE]">
-        <Gem className="w-7 h-7" aria-hidden="true" />
+      <div className="h-28 sm:h-36 w-full rounded-lg bg-[#FAF8F5] border border-[#F0E9DF] mb-2.5 sm:mb-3 flex items-center justify-center text-[#C8B9AE]">
+        <Gem className="w-6 h-6 sm:w-7 sm:h-7" aria-hidden="true" />
       </div>
     );
   }
 
   return (
-    <div className="h-36 w-full rounded-lg overflow-hidden bg-[#FAF8F5] border border-[#F0E9DF] mb-3">
+    <div className="h-28 sm:h-36 w-full rounded-lg overflow-hidden bg-[#FAF8F5] border border-[#F0E9DF] mb-2.5 sm:mb-3">
       <img
         src={src}
         alt={alt}
@@ -209,96 +211,166 @@ export const PosRegisterView: React.FC = () => {
     (s) => s.status === 'completed' && s.saleDate === getTodayDateString()
   ).length;
 
+  const scrollToCheckout = () => {
+    document.getElementById('pos-checkout-panel')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
+  const cartItemCount = totals.items.reduce((acc, i) => acc + i.quantity, 0);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Sub-header controls */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Point of Sale Register
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Select items or scan barcode · Inventory deducts automatically on checkout
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setShowRecentSales((v) => !v)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#E8DFD3] bg-white hover:bg-[#F8EBAB]/35 text-[#231712] transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 sm:flex-initial min-h-[42px] px-4 py-2 text-xs sm:text-sm font-medium rounded-lg border border-[#E8DFD3] bg-white hover:bg-[#F8EBAB]/35 text-[#231712] transition-colors cursor-pointer whitespace-nowrap"
           >
             {showRecentSales ? 'Hide Recent Receipts' : `Recent Receipts (${todaysSalesCount} today)`}
           </button>
+          {cartItemCount > 0 && (
+            <button
+              type="button"
+              onClick={scrollToCheckout}
+              className="xl:hidden min-h-[42px] inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-[#231712] text-[#F7D87F] cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="font-mono tabular-nums">
+                {cartItemCount} · {formatCurrency(totals.total)}
+              </span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Collapsible Recent Receipts Table */}
+      {/* Collapsible Recent Receipts Table / Mobile Cards */}
       {showRecentSales && (
         <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-[#E8DFD3] flex items-center justify-between">
+          <div className="px-4 sm:px-5 py-3.5 border-b border-[#E8DFD3] flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold text-[#231712]">Recent Sales Receipts</h2>
             <span className="text-xs text-[#766257]">
-              Showing latest {Math.min(sales.length, 8)} transactions
+              Latest {Math.min(sales.length, 8)}
             </span>
           </div>
           {sales.length === 0 ? (
             <p className="p-6 text-sm text-[#766257]">No sales recorded yet.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                  <tr>
-                    <th className="px-4 py-2.5 font-medium">Receipt</th>
-                    <th className="px-4 py-2.5 font-medium">Date</th>
-                    <th className="px-4 py-2.5 font-medium">Customer</th>
-                    <th className="px-4 py-2.5 font-medium">Cashier</th>
-                    <th className="px-4 py-2.5 font-medium">Method</th>
-                    <th className="px-4 py-2.5 font-medium text-right">Total</th>
-                    <th className="px-4 py-2.5 font-medium text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E8DFD3]">
-                  {sales.slice(0, 8).map((sale) => (
-                    <tr key={sale.id} className="hover:bg-[#FAF8F5]">
-                      <td className="px-4 py-2.5 font-mono text-xs font-medium text-[#231712]">
-                        {sale.receiptNumber}
-                        {sale.status === 'voided' && (
-                          <span className="ml-2 text-[#BE1A1A] font-sans">(Voided)</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 font-mono text-xs text-[#766257]">
-                        {sale.saleDate}
-                      </td>
-                      <td className="px-4 py-2.5 text-[#231712]">{sale.customerName}</td>
-                      <td className="px-4 py-2.5 text-xs text-[#5C493F]">{sale.cashierName}</td>
-                      <td className="px-4 py-2.5 text-[#766257]">{sale.paymentMethod}</td>
-                      <td className="px-4 py-2.5 font-mono tabular-nums text-right font-medium text-[#231712]">
+            <>
+              {/* Mobile Receipts Card List */}
+              <ul className="md:hidden divide-y divide-[#E8DFD3]">
+                {sales.slice(0, 8).map((sale) => (
+                  <li key={sale.id} className="p-3.5 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-mono text-xs font-semibold text-[#231712]">
+                          {sale.receiptNumber}
+                          {sale.status === 'voided' && (
+                            <span className="ml-2 text-[#BE1A1A] font-sans">(Voided)</span>
+                          )}
+                        </p>
+                        <p className="text-sm font-medium text-[#231712] truncate mt-0.5">
+                          {sale.customerName}
+                        </p>
+                        <p className="text-xs text-[#766257]">
+                          {sale.saleDate} · {sale.paymentMethod} · {sale.cashierName}
+                        </p>
+                      </div>
+                      <span className="font-mono tabular-nums text-sm font-semibold text-[#231712] shrink-0">
                         {formatCurrency(sale.total)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right space-x-3 whitespace-nowrap">
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setCompletedReceipt(sale)}
+                        className="min-h-[38px] px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E8DFD3] bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                      >
+                        View Receipt
+                      </button>
+                      {sale.status === 'completed' && can('void_sale') && (
                         <button
                           type="button"
-                          onClick={() => setCompletedReceipt(sale)}
-                          className="text-xs font-medium text-[#231712] hover:text-[#BE1A1A] underline cursor-pointer"
+                          onClick={() => voidSale(sale.id)}
+                          aria-label={`Void receipt ${sale.receiptNumber}`}
+                          className="min-h-[38px] px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0311E]/40 text-[#BE1A1A] cursor-pointer"
                         >
-                          Receipt
+                          Void
                         </button>
-                        {sale.status === 'completed' && can('void_sale') && (
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                    <tr>
+                      <th className="px-4 py-2.5 font-medium">Receipt</th>
+                      <th className="px-4 py-2.5 font-medium">Date</th>
+                      <th className="px-4 py-2.5 font-medium">Customer</th>
+                      <th className="px-4 py-2.5 font-medium">Cashier</th>
+                      <th className="px-4 py-2.5 font-medium">Method</th>
+                      <th className="px-4 py-2.5 font-medium text-right">Total</th>
+                      <th className="px-4 py-2.5 font-medium text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E8DFD3]">
+                    {sales.slice(0, 8).map((sale) => (
+                      <tr key={sale.id} className="hover:bg-[#FAF8F5]">
+                        <td className="px-4 py-2.5 font-mono text-xs font-medium text-[#231712]">
+                          {sale.receiptNumber}
+                          {sale.status === 'voided' && (
+                            <span className="ml-2 text-[#BE1A1A] font-sans">(Voided)</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2.5 font-mono text-xs text-[#766257]">
+                          {sale.saleDate}
+                        </td>
+                        <td className="px-4 py-2.5 text-[#231712]">{sale.customerName}</td>
+                        <td className="px-4 py-2.5 text-xs text-[#5C493F]">{sale.cashierName}</td>
+                        <td className="px-4 py-2.5 text-[#766257]">{sale.paymentMethod}</td>
+                        <td className="px-4 py-2.5 font-mono tabular-nums text-right font-medium text-[#231712]">
+                          {formatCurrency(sale.total)}
+                        </td>
+                        <td className="px-4 py-2.5 text-right space-x-3 whitespace-nowrap">
                           <button
                             type="button"
-                            onClick={() => voidSale(sale.id)}
-                            aria-label={`Void receipt ${sale.receiptNumber}`}
-                            className="text-xs font-medium text-[#BE1A1A] hover:text-[#D0311E] cursor-pointer"
+                            onClick={() => setCompletedReceipt(sale)}
+                            className="text-xs font-medium text-[#231712] hover:text-[#BE1A1A] underline cursor-pointer"
                           >
-                            Void
+                            Receipt
                           </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          {sale.status === 'completed' && can('void_sale') && (
+                            <button
+                              type="button"
+                              onClick={() => voidSale(sale.id)}
+                              aria-label={`Void receipt ${sale.receiptNumber}`}
+                              className="text-xs font-medium text-[#BE1A1A] hover:text-[#D0311E] cursor-pointer"
+                            >
+                              Void
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}
@@ -308,7 +380,7 @@ export const PosRegisterView: React.FC = () => {
         {/* Left Catalog Pane */}
         <div className="xl:col-span-8 space-y-4">
           {/* Search & Barcode Bar */}
-          <div className="bg-white border border-[#E8DFD3] rounded-xl p-4 space-y-3">
+          <div className="bg-white border border-[#E8DFD3] rounded-xl p-3 sm:p-4 space-y-3">
             <div className="relative">
               <Search
                 className="w-4 h-4 text-[#766257] absolute left-3.5 top-1/2 -translate-y-1/2"
@@ -323,8 +395,8 @@ export const PosRegisterView: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleBarcodeEnter}
-                placeholder="Search jewelry, perfume, cosmetics or scan SKU / barcode and press Enter..."
-                className="w-full pl-10 pr-10 py-2.5 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
+                placeholder="Search jewelry, perfume, SKU or barcode..."
+                className="w-full pl-10 pr-10 py-2.5 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A] text-[#231712] placeholder:text-[#9A8579]"
               />
               <ScanLine
                 className="w-4 h-4 text-[#BE1A1A] absolute right-3.5 top-1/2 -translate-y-1/2"
@@ -347,7 +419,7 @@ export const PosRegisterView: React.FC = () => {
                     role="tab"
                     aria-selected={active}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`min-h-[38px] px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       active
                         ? 'bg-[#231712] text-[#F7D87F]'
                         : 'bg-[#FAF8F5] text-[#5C493F] hover:bg-[#F8EBAB]/50 hover:text-[#231712]'
@@ -362,7 +434,7 @@ export const PosRegisterView: React.FC = () => {
 
           {/* Empty Catalog State */}
           {inventory.length === 0 ? (
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-10 text-center">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-8 sm:p-10 text-center">
               <p className="font-display text-lg font-semibold text-[#231712]">
                 Your inventory catalog is empty
               </p>
@@ -373,7 +445,7 @@ export const PosRegisterView: React.FC = () => {
               <button
                 type="button"
                 onClick={seedCloudCatalog}
-                className="mt-5 px-5 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer"
+                className="mt-5 min-h-[44px] px-5 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer"
               >
                 Load Starter ELA Catalog ({syncMode === 'cloud' ? 'Cloud' : 'Local'})
               </button>
@@ -383,7 +455,7 @@ export const PosRegisterView: React.FC = () => {
               No products match "{search}". Try clearing your filter.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
               {filteredInventory.map((item) => {
                 const inCart = cart.find((c) => c.itemId === item.id)?.quantity ?? 0;
                 const isLow = item.quantity > 0 && item.quantity <= item.reorderLevel;
@@ -396,7 +468,7 @@ export const PosRegisterView: React.FC = () => {
                     disabled={isOut}
                     onClick={() => addToCart(item)}
                     aria-label={`Add ${item.name} to cart`}
-                    className={`group text-left bg-white border rounded-xl p-4 flex flex-col justify-between transition-all cursor-pointer ${
+                    className={`group text-left bg-white border rounded-xl p-2.5 sm:p-4 flex flex-col justify-between transition-all cursor-pointer active:scale-[0.99] ${
                       inCart > 0
                         ? 'border-[#BE1A1A] bg-[#FFFDF8]'
                         : 'border-[#E8DFD3] hover:border-[#D0311E]/60 hover:-translate-y-0.5'
@@ -404,31 +476,33 @@ export const PosRegisterView: React.FC = () => {
                   >
                     <div>
                       <ProductCardImage src={item.imageUrl} alt={item.name} />
-                      <div className="flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center justify-between gap-1.5 text-[11px] sm:text-xs">
                         <span className="font-medium text-[#BE1A1A] truncate">
                           {item.category}
                         </span>
-                        <span className="font-mono text-[11px] text-[#766257] whitespace-nowrap shrink-0">
+                        <span className="hidden sm:inline font-mono text-[11px] text-[#766257] whitespace-nowrap shrink-0">
                           {item.sku}
                         </span>
                       </div>
 
-                      <h3 className="text-sm font-semibold text-[#231712] mt-2 leading-snug line-clamp-2">
+                      <h3 className="text-xs sm:text-sm font-semibold text-[#231712] mt-1 sm:mt-2 leading-snug line-clamp-2">
                         {item.name}
                       </h3>
 
                       {item.notes && (
-                        <p className="text-xs text-[#766257] mt-1 line-clamp-1">{item.notes}</p>
+                        <p className="hidden sm:line-clamp-1 text-xs text-[#766257] mt-1">
+                          {item.notes}
+                        </p>
                       )}
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-[#F0E9DF] flex items-end justify-between gap-2">
-                      <div>
-                        <p className="font-mono tabular-nums text-base font-semibold text-[#231712]">
+                    <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-[#F0E9DF] flex items-end justify-between gap-1.5 sm:gap-2">
+                      <div className="min-w-0">
+                        <p className="font-mono tabular-nums text-sm sm:text-base font-semibold text-[#231712]">
                           {formatCurrency(item.retailPrice)}
                         </p>
                         <p
-                          className={`text-xs font-mono tabular-nums mt-0.5 ${
+                          className={`text-[10px] sm:text-xs font-mono tabular-nums mt-0.5 truncate ${
                             isOut
                               ? 'text-[#BE1A1A] font-semibold'
                               : isLow
@@ -436,19 +510,19 @@ export const PosRegisterView: React.FC = () => {
                               : 'text-[#766257]'
                           }`}
                         >
-                          {isOut ? 'Out of stock' : `${item.quantity} in stock`}
+                          {isOut ? 'Out' : `${item.quantity} left`}
                         </p>
                       </div>
 
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                        className={`inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors shrink-0 ${
                           inCart > 0
                             ? 'bg-[#BE1A1A] text-white'
                             : 'bg-[#FAF8F5] text-[#231712] group-hover:bg-[#F8EBAB]'
                         }`}
                       >
-                        <Plus className="w-3.5 h-3.5" aria-hidden="true" />
-                        {inCart > 0 ? `${inCart} in cart` : 'Add'}
+                        <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" aria-hidden="true" />
+                        {inCart > 0 ? `${inCart}` : 'Add'}
                       </span>
                     </div>
                   </button>
@@ -460,21 +534,22 @@ export const PosRegisterView: React.FC = () => {
 
         {/* Right Checkout Cart Panel */}
         <form
+          id="pos-checkout-panel"
           onSubmit={handleCompleteSale}
-          className="xl:col-span-4 bg-white border border-[#E8DFD3] rounded-xl p-5 space-y-5 xl:sticky xl:top-6"
+          className="xl:col-span-4 bg-white border border-[#E8DFD3] rounded-xl p-4 sm:p-5 space-y-4 sm:space-y-5 xl:sticky xl:top-6 scroll-mt-14"
         >
           <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3.5">
             <div>
               <h2 className="font-display text-lg font-semibold text-[#231712]">Current Sale</h2>
               <p className="text-xs text-[#766257]">
-                {totals.items.reduce((acc, i) => acc + i.quantity, 0)} item(s) selected
+                {cartItemCount} item(s) selected
               </p>
             </div>
             {cart.length > 0 && (
               <button
                 type="button"
                 onClick={() => setCart([])}
-                className="text-xs font-medium text-[#BE1A1A] hover:underline cursor-pointer"
+                className="min-h-[36px] px-2 text-xs font-medium text-[#BE1A1A] hover:underline cursor-pointer"
               >
                 Clear Cart
               </button>
@@ -486,7 +561,7 @@ export const PosRegisterView: React.FC = () => {
             <div className="py-8 text-center border border-dashed border-[#E8DFD3] rounded-lg">
               <p className="text-sm font-medium text-[#231712]">Cart is empty</p>
               <p className="text-xs text-[#766257] mt-1">
-                Tap products on the left or scan a barcode
+                Tap products to add or scan a barcode
               </p>
             </div>
           ) : (
@@ -525,7 +600,7 @@ export const PosRegisterView: React.FC = () => {
                       type="button"
                       onClick={() => updateCartQty(item.id, -1)}
                       aria-label={`Decrease quantity of ${item.name}`}
-                      className="w-7 h-7 flex items-center justify-center rounded border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                      className="min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center rounded-md border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
@@ -536,7 +611,7 @@ export const PosRegisterView: React.FC = () => {
                       type="button"
                       onClick={() => updateCartQty(item.id, 1)}
                       aria-label={`Increase quantity of ${item.name}`}
-                      className="w-7 h-7 flex items-center justify-center rounded border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                      className="min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center rounded-md border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -544,7 +619,7 @@ export const PosRegisterView: React.FC = () => {
                       type="button"
                       onClick={() => removeFromCart(item.id)}
                       aria-label={`Remove ${item.name} from cart`}
-                      className="w-7 h-7 flex items-center justify-center rounded text-[#766257] hover:text-[#BE1A1A] cursor-pointer"
+                      className="min-w-[38px] min-h-[38px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-[#766257] hover:text-[#BE1A1A] cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -566,7 +641,7 @@ export const PosRegisterView: React.FC = () => {
                     key={method}
                     type="button"
                     onClick={() => setPaymentMethod(method)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                    className={`flex items-center gap-2 px-3 min-h-[42px] py-2 rounded-lg border text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                       active
                         ? 'border-[#BE1A1A] bg-[#BE1A1A] text-white'
                         : 'border-[#E8DFD3] bg-[#FAF8F5] text-[#231712] hover:bg-[#F8EBAB]/40'
@@ -593,7 +668,7 @@ export const PosRegisterView: React.FC = () => {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Walk-in Client"
-                className="w-full px-3 py-2 text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                className="w-full px-3 py-2 text-base sm:text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
             <div className="col-span-2 sm:col-span-1">
@@ -606,7 +681,7 @@ export const PosRegisterView: React.FC = () => {
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 placeholder="+251-9..."
-                className="w-full px-3 py-2 text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                className="w-full px-3 py-2 text-base sm:text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
 
@@ -623,7 +698,7 @@ export const PosRegisterView: React.FC = () => {
                     step="0.01"
                     value={initialDeposit}
                     onChange={(e) => setInitialDeposit(e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                    className="w-full px-3 py-2 text-base sm:text-xs font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
                   />
                 </div>
                 <div>
@@ -635,7 +710,7 @@ export const PosRegisterView: React.FC = () => {
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                    className="w-full px-3 py-2 text-base sm:text-xs font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
                   />
                 </div>
               </>
@@ -655,7 +730,7 @@ export const PosRegisterView: React.FC = () => {
                 step="0.01"
                 value={discountInput}
                 onChange={(e) => setDiscountInput(e.target.value)}
-                className="w-24 px-2.5 py-1 text-right font-mono tabular-nums text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-md focus:outline-none focus:border-[#BE1A1A]"
+                className="w-24 px-2.5 py-1.5 text-right font-mono tabular-nums text-base sm:text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-md focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
             <div className="flex items-center justify-between text-xs text-[#766257]">
@@ -679,7 +754,7 @@ export const PosRegisterView: React.FC = () => {
           <button
             type="submit"
             disabled={submitting || totals.items.length === 0}
-            className="w-full py-3 px-4 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:bg-[#D5C9BE] disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
+            className="w-full min-h-[48px] py-3 px-4 bg-[#BE1A1A] hover:bg-[#D0311E] disabled:bg-[#D5C9BE] disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
           >
             {submitting
               ? 'Recording Sale...'
@@ -690,15 +765,30 @@ export const PosRegisterView: React.FC = () => {
         </form>
       </div>
 
+      {/* Mobile Floating Quick-Jump to Checkout */}
+      {cartItemCount > 0 && (
+        <button
+          type="button"
+          onClick={scrollToCheckout}
+          className="xl:hidden fixed bottom-[calc(3.85rem+env(safe-area-inset-bottom,0px))] right-3.5 z-30 inline-flex items-center gap-2 h-11 px-4 rounded-xl bg-[#231712] text-[#F7D87F] border border-[#F7D87F]/45 shadow-xl text-xs font-semibold cursor-pointer active:scale-[0.98] transition-transform no-print"
+        >
+          <ShoppingBag className="w-4 h-4" aria-hidden="true" />
+          <span className="font-mono tabular-nums">
+            {cartItemCount} · {formatCurrency(totals.total)}
+          </span>
+          <ArrowDown className="w-3.5 h-3.5" aria-hidden="true" />
+        </button>
+      )}
+
       {/* Receipt Confirmation Modal */}
       {completedReceipt && (
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="receipt-dialog-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 print-only-sheet">
+          <div className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 max-h-[92dvh] overflow-y-auto pb-safe print-only-sheet">
             <div className="flex items-center justify-between mb-4 no-print">
               <div className="flex items-center gap-2 text-[#231712]">
                 <CheckCircle2 className="w-5 h-5 text-[#16A34A]" />
@@ -710,17 +800,17 @@ export const PosRegisterView: React.FC = () => {
                 type="button"
                 onClick={() => setCompletedReceipt(null)}
                 aria-label="Close receipt modal"
-                className="p-1.5 rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="border border-[#E8DFD3] rounded-xl p-5 bg-[#FAF8F5]/50 text-center space-y-3">
+            <div className="border border-[#E8DFD3] rounded-xl p-4 sm:p-5 bg-[#FAF8F5]/50 text-center space-y-3">
               <img
                 src="./assets/aistudio/image_89dfb75c.png"
                 alt="ELA Jewelry"
-                className="h-16 mx-auto object-contain"
+                className="h-14 sm:h-16 mx-auto object-contain"
                 referrerPolicy="no-referrer"
               />
               <div className="text-xs text-[#766257]">
@@ -739,7 +829,7 @@ export const PosRegisterView: React.FC = () => {
                     <span className="text-[#231712]">
                       {line.name} ×{line.quantity}
                     </span>
-                    <span className="font-mono tabular-nums font-medium">
+                    <span className="font-mono tabular-nums font-medium shrink-0">
                       {formatCurrency(line.lineTotal)}
                     </span>
                   </div>
@@ -767,11 +857,11 @@ export const PosRegisterView: React.FC = () => {
               </p>
             </div>
 
-            <div className="mt-5 flex items-center justify-end gap-2.5 no-print">
+            <div className="mt-5 grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2.5 no-print">
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#231712] cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Print Receipt</span>
@@ -779,7 +869,7 @@ export const PosRegisterView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setCompletedReceipt(null)}
-                className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#BE1A1A] hover:bg-[#D0311E] text-white cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold rounded-lg bg-[#BE1A1A] hover:bg-[#D0311E] text-white cursor-pointer"
               >
                 New Sale
               </button>

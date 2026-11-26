@@ -109,12 +109,12 @@ export const ReportsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header & Export */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Financial &amp; Inventory Reports
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Date-range sales with payment breakdown, purchases &amp; real-time retail/cost valuation
           </p>
         </div>
@@ -122,7 +122,7 @@ export const ReportsView: React.FC = () => {
         <button
           type="button"
           onClick={handleExportCurrent}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E8DFD3] hover:bg-[#F8EBAB]/40 text-[#231712] text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-[#E8DFD3] hover:bg-[#F8EBAB]/40 text-[#231712] text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
         >
           <Download className="w-4 h-4 text-[#BE1A1A]" aria-hidden="true" />
           <span>Export CSV</span>
@@ -130,17 +130,17 @@ export const ReportsView: React.FC = () => {
       </div>
 
       {/* Report Tabs + Date Range Controls */}
-      <div className="bg-white border border-[#E8DFD3] rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border border-[#E8DFD3] rounded-xl p-3 sm:p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
         <div
           role="tablist"
           aria-label="Report type"
-          className="flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3]"
+          className="grid grid-cols-3 sm:inline-flex w-full sm:w-auto items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3]"
         >
           {(
             [
-              { id: 'sales', label: 'Sales Report' },
-              { id: 'purchases', label: 'Purchase Report' },
-              { id: 'valuation', label: 'Inventory Valuation' },
+              { id: 'sales', shortLabel: 'Sales', label: 'Sales Report' },
+              { id: 'purchases', shortLabel: 'Purchases', label: 'Purchase Report' },
+              { id: 'valuation', shortLabel: 'Valuation', label: 'Inventory Valuation' },
             ] as const
           ).map((tab) => (
             <button
@@ -149,44 +149,47 @@ export const ReportsView: React.FC = () => {
               role="tab"
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+              className={`min-h-[40px] sm:min-h-0 px-2 sm:px-3.5 py-2 sm:py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap truncate ${
                 activeTab === tab.id
                   ? 'bg-[#BE1A1A] text-white'
                   : 'text-[#5C493F] hover:text-[#231712]'
               }`}
             >
-              {tab.label}
+              <span className="sm:hidden">{tab.shortLabel}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
 
         {activeTab !== 'valuation' && (
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="report-from" className="text-[#766257]">
-                From
-              </label>
-              <input
-                id="report-from"
-                type="date"
-                value={range.from}
-                onChange={(e) => setRange({ ...range, from: e.target.value })}
-                className="px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
-              />
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 text-xs w-full lg:w-auto">
+            <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                <label htmlFor="report-from" className="text-[11px] sm:text-xs text-[#766257]">
+                  From
+                </label>
+                <input
+                  id="report-from"
+                  type="date"
+                  value={range.from}
+                  onChange={(e) => setRange({ ...range, from: e.target.value })}
+                  className="w-full sm:w-auto px-2.5 py-2 sm:py-1.5 text-base sm:text-xs font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                <label htmlFor="report-to" className="text-[11px] sm:text-xs text-[#766257]">
+                  To
+                </label>
+                <input
+                  id="report-to"
+                  type="date"
+                  value={range.to}
+                  onChange={(e) => setRange({ ...range, to: e.target.value })}
+                  className="w-full sm:w-auto px-2.5 py-2 sm:py-1.5 text-base sm:text-xs font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <label htmlFor="report-to" className="text-[#766257]">
-                To
-              </label>
-              <input
-                id="report-to"
-                type="date"
-                value={range.to}
-                onChange={(e) => setRange({ ...range, to: e.target.value })}
-                className="px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
-              />
-            </div>
-            <div className="flex items-center gap-1">
+            <div className="grid grid-cols-5 sm:flex items-center gap-1">
               {(
                 [
                   { id: 'today', label: 'Today' },
@@ -200,7 +203,7 @@ export const ReportsView: React.FC = () => {
                   key={p.id}
                   type="button"
                   onClick={() => applyPreset(p.id)}
-                  className="px-2.5 py-1.5 rounded-md bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] text-[#231712] font-medium cursor-pointer"
+                  className="min-h-[38px] sm:min-h-0 px-2 sm:px-2.5 py-1.5 rounded-md bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] text-[#231712] font-medium cursor-pointer whitespace-nowrap"
                 >
                   {p.label}
                 </button>
@@ -212,44 +215,44 @@ export const ReportsView: React.FC = () => {
 
       {/* 6.1 SALES REPORT (With Payment Methods Breakdown) */}
       {activeTab === 'sales' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Gross Sales Revenue</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#BE1A1A] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#BE1A1A] mt-1">
                 {formatCurrency(salesReport.grossRevenue)}
               </p>
-              <p className="text-xs text-[#766257] mt-1">
+              <p className="text-[11px] sm:text-xs text-[#766257] mt-1">
                 {salesReport.transactionCount} receipts · {salesReport.unitsSold} units
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Cost of Goods Sold</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
                 {formatCurrency(salesReport.totalCostOfGoods)}
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Net Profit</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#16A34A] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#16A34A] mt-1">
                 {formatCurrency(salesReport.netProfit)}
               </p>
-              <p className="text-xs font-mono text-[#766257] mt-1">
+              <p className="text-[11px] sm:text-xs font-mono text-[#766257] mt-1">
                 {salesReport.profitMarginPercent}% margin
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Discounts Granted</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
                 {formatCurrency(salesReport.totalDiscounts)}
               </p>
             </div>
           </div>
 
           {/* Payment Methods Breakdown */}
-          <div className="bg-white border border-[#E8DFD3] rounded-xl p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold text-[#231712]">
+          <div className="bg-white border border-[#E8DFD3] rounded-xl p-4 sm:p-5 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-1">
+              <h2 className="font-display text-base sm:text-lg font-semibold text-[#231712]">
                 Payment Methods Breakdown
               </h2>
               <span className="text-xs text-[#766257]">
@@ -260,12 +263,12 @@ export const ReportsView: React.FC = () => {
             <div className="space-y-3">
               {salesReport.byPaymentMethod.map((pm) => (
                 <div key={pm.method} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between gap-2 text-xs">
                     <span className="font-semibold text-[#231712]">
                       {pm.method}{' '}
                       <span className="font-normal text-[#766257]">({pm.count} sales)</span>
                     </span>
-                    <span className="font-mono tabular-nums font-semibold text-[#231712]">
+                    <span className="font-mono tabular-nums font-semibold text-[#231712] shrink-0">
                       {formatCurrency(pm.total)}{' '}
                       <span className="text-[#766257] font-normal">({pm.sharePercent}%)</span>
                     </span>
@@ -283,7 +286,7 @@ export const ReportsView: React.FC = () => {
 
           {/* Itemized Sales Ledger */}
           <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#E8DFD3]">
+            <div className="px-4 sm:px-5 py-3.5 border-b border-[#E8DFD3]">
               <h2 className="text-sm font-semibold text-[#231712]">Sales Ledger in Range</h2>
             </div>
             {salesReport.sales.length === 0 ? (
@@ -291,42 +294,70 @@ export const ReportsView: React.FC = () => {
                 No completed sales in the selected date range.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Receipt</th>
-                      <th className="px-4 py-3 font-medium">Date</th>
-                      <th className="px-4 py-3 font-medium">Client</th>
-                      <th className="px-4 py-3 font-medium">Payment Method</th>
-                      <th className="px-4 py-3 font-medium text-right">Total</th>
-                      <th className="px-4 py-3 font-medium text-right">Profit</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E8DFD3]">
-                    {salesReport.sales.map((s) => (
-                      <tr key={s.id} className="hover:bg-[#FAF8F5]/75">
-                        <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#231712]">
-                          {s.receiptNumber}
-                        </td>
-                        <td className="px-4 py-2.5 font-mono text-xs text-[#766257]">
-                          {s.saleDate}
-                        </td>
-                        <td className="px-4 py-2.5 text-[#231712]">{s.customerName}</td>
-                        <td className="px-4 py-2.5 font-medium text-[#5C493F]">
+              <>
+                <div className="md:hidden divide-y divide-[#E8DFD3]">
+                  {salesReport.sales.map((s) => (
+                    <div key={s.id} className="p-3.5 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[#231712] truncate">
+                          {s.customerName}
+                        </p>
+                        <p className="text-[11px] font-mono text-[#766257] mt-0.5">
+                          {s.receiptNumber} · {s.saleDate}
+                        </p>
+                        <p className="text-[11px] text-[#5C493F] font-medium mt-0.5">
                           {s.paymentMethod}
-                        </td>
-                        <td className="px-4 py-2.5 font-mono tabular-nums text-right font-semibold text-[#231712]">
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="font-mono tabular-nums text-sm font-semibold text-[#231712]">
                           {formatCurrency(s.total)}
-                        </td>
-                        <td className="px-4 py-2.5 font-mono tabular-nums text-right text-[#16A34A]">
-                          {formatCurrency(s.total - s.totalCost)}
-                        </td>
+                        </p>
+                        <p className="font-mono tabular-nums text-[11px] text-[#16A34A] mt-0.5">
+                          +{formatCurrency(s.total - s.totalCost)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                      <tr>
+                        <th className="px-4 py-3 font-medium">Receipt</th>
+                        <th className="px-4 py-3 font-medium">Date</th>
+                        <th className="px-4 py-3 font-medium">Client</th>
+                        <th className="px-4 py-3 font-medium">Payment Method</th>
+                        <th className="px-4 py-3 font-medium text-right">Total</th>
+                        <th className="px-4 py-3 font-medium text-right">Profit</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#E8DFD3]">
+                      {salesReport.sales.map((s) => (
+                        <tr key={s.id} className="hover:bg-[#FAF8F5]/75">
+                          <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#231712]">
+                            {s.receiptNumber}
+                          </td>
+                          <td className="px-4 py-2.5 font-mono text-xs text-[#766257]">
+                            {s.saleDate}
+                          </td>
+                          <td className="px-4 py-2.5 text-[#231712]">{s.customerName}</td>
+                          <td className="px-4 py-2.5 font-medium text-[#5C493F]">
+                            {s.paymentMethod}
+                          </td>
+                          <td className="px-4 py-2.5 font-mono tabular-nums text-right font-semibold text-[#231712]">
+                            {formatCurrency(s.total)}
+                          </td>
+                          <td className="px-4 py-2.5 font-mono tabular-nums text-right text-[#16A34A]">
+                            {formatCurrency(s.total - s.totalCost)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -334,39 +365,39 @@ export const ReportsView: React.FC = () => {
 
       {/* 6.2 PURCHASE REPORT */}
       {activeTab === 'purchases' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Total Purchase Spend</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
                 {formatCurrency(purchaseReport.totalSpend)}
               </p>
-              <p className="text-xs text-[#766257] mt-1">
+              <p className="text-[11px] sm:text-xs text-[#766257] mt-1">
                 {purchaseReport.orderCount} orders · {purchaseReport.unitsPurchased} units
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Paid Purchases</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#16A34A] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#16A34A] mt-1">
                 {formatCurrency(purchaseReport.paidSpend)}
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Supplier Credit</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#D0311E] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#D0311E] mt-1">
                 {formatCurrency(purchaseReport.supplierCreditSpend)}
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <p className="text-xs text-[#766257]">Active Suppliers</p>
-              <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
                 {purchaseReport.bySupplier.length}
               </p>
             </div>
           </div>
 
           <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#E8DFD3]">
+            <div className="px-4 sm:px-5 py-3.5 border-b border-[#E8DFD3]">
               <h2 className="text-sm font-semibold text-[#231712]">Spend by Supplier</h2>
             </div>
             {purchaseReport.bySupplier.length === 0 ? (
@@ -374,32 +405,55 @@ export const ReportsView: React.FC = () => {
                 No purchases recorded in the selected range.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Supplier</th>
-                      <th className="px-4 py-3 font-medium text-right">Orders</th>
-                      <th className="px-4 py-3 font-medium text-right">Total Spend</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#E8DFD3]">
-                    {purchaseReport.bySupplier.map((sup) => (
-                      <tr key={sup.supplierName} className="hover:bg-[#FAF8F5]/75">
-                        <td className="px-4 py-3 font-medium text-[#231712]">
+              <>
+                <div className="md:hidden divide-y divide-[#E8DFD3]">
+                  {purchaseReport.bySupplier.map((sup) => (
+                    <div
+                      key={sup.supplierName}
+                      className="p-3.5 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[#231712] truncate">
                           {sup.supplierName}
-                        </td>
-                        <td className="px-4 py-3 font-mono tabular-nums text-right text-[#5C493F]">
-                          {sup.orderCount}
-                        </td>
-                        <td className="px-4 py-3 font-mono tabular-nums text-right font-semibold text-[#231712]">
-                          {formatCurrency(sup.totalCost)}
-                        </td>
+                        </p>
+                        <p className="text-[11px] font-mono text-[#766257] mt-0.5">
+                          {sup.orderCount} order(s)
+                        </p>
+                      </div>
+                      <span className="font-mono tabular-nums text-sm font-semibold text-[#231712] shrink-0">
+                        {formatCurrency(sup.totalCost)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                      <tr>
+                        <th className="px-4 py-3 font-medium">Supplier</th>
+                        <th className="px-4 py-3 font-medium text-right">Orders</th>
+                        <th className="px-4 py-3 font-medium text-right">Total Spend</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#E8DFD3]">
+                      {purchaseReport.bySupplier.map((sup) => (
+                        <tr key={sup.supplierName} className="hover:bg-[#FAF8F5]/75">
+                          <td className="px-4 py-3 font-medium text-[#231712]">
+                            {sup.supplierName}
+                          </td>
+                          <td className="px-4 py-3 font-mono tabular-nums text-right text-[#5C493F]">
+                            {sup.orderCount}
+                          </td>
+                          <td className="px-4 py-3 font-mono tabular-nums text-right font-semibold text-[#231712]">
+                            {formatCurrency(sup.totalCost)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -407,47 +461,81 @@ export const ReportsView: React.FC = () => {
 
       {/* 6.3 INVENTORY VALUATION (6.3.1 Retail Value & 6.3.2 Cost Value) */}
       {activeTab === 'valuation' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-[#231712] text-white border border-[#231712] rounded-xl p-5">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+            <div className="bg-[#231712] text-white border border-[#231712] rounded-xl p-3.5 sm:p-5">
               <p className="text-xs text-[#F7D87F]">Total Retail Value</p>
-              <p className="font-mono tabular-nums text-2xl font-bold text-white mt-1.5">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-bold text-white mt-1.5">
                 {formatCurrency(valuation.totalRetailValue)}
               </p>
-              <p className="text-xs text-[#C8B9AE] mt-1">
-                {valuation.totalUnits} pieces across {valuation.totalSkus} SKUs
+              <p className="text-[11px] sm:text-xs text-[#C8B9AE] mt-1">
+                {valuation.totalUnits} pcs · {valuation.totalSkus} SKUs
               </p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-5">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-5">
               <p className="text-xs text-[#766257]">Total Cost Value</p>
-              <p className="font-mono tabular-nums text-2xl font-bold text-[#231712] mt-1.5">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-bold text-[#231712] mt-1.5">
                 {formatCurrency(valuation.totalCostValue)}
               </p>
-              <p className="text-xs text-[#766257] mt-1">Capital invested in current stock</p>
+              <p className="text-[11px] sm:text-xs text-[#766257] mt-1">Capital in stock</p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-5">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-5">
               <p className="text-xs text-[#766257]">Projected Gross Profit</p>
-              <p className="font-mono tabular-nums text-2xl font-bold text-[#16A34A] mt-1.5">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-bold text-[#16A34A] mt-1.5">
                 {formatCurrency(valuation.potentialGrossProfit)}
               </p>
-              <p className="text-xs text-[#766257] mt-1">Retail minus Cost value</p>
+              <p className="text-[11px] sm:text-xs text-[#766257] mt-1">Retail minus Cost</p>
             </div>
-            <div className="bg-white border border-[#E8DFD3] rounded-xl p-5">
+            <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-5">
               <p className="text-xs text-[#766257]">Average Retail Margin</p>
-              <p className="font-mono tabular-nums text-2xl font-bold text-[#BE1A1A] mt-1.5">
+              <p className="font-mono tabular-nums text-lg sm:text-2xl font-bold text-[#BE1A1A] mt-1.5">
                 {valuation.averageMarginPercent}%
               </p>
-              <p className="text-xs text-[#766257] mt-1">Across all active boutique lines</p>
+              <p className="text-[11px] sm:text-xs text-[#766257] mt-1">Across boutique lines</p>
             </div>
           </div>
 
           <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#E8DFD3]">
+            <div className="px-4 sm:px-5 py-3.5 border-b border-[#E8DFD3]">
               <h2 className="text-sm font-semibold text-[#231712]">
                 Valuation Breakdown by Product Category
               </h2>
             </div>
-            <div className="overflow-x-auto">
+
+            <div className="md:hidden divide-y divide-[#E8DFD3]">
+              {valuation.byCategory.map((row) => (
+                <div key={row.category} className="p-3.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-[#231712]">{row.category}</p>
+                    <span className="font-mono text-[11px] text-[#766257]">
+                      {row.skuCount} SKUs · {row.totalUnits} units
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs bg-[#FAF8F5] border border-[#F0E9DF] rounded-lg p-2">
+                    <div>
+                      <p className="text-[10px] text-[#766257]">Cost Value</p>
+                      <p className="font-mono tabular-nums font-medium text-[#231712]">
+                        {formatCurrency(row.costValue)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[#766257]">Retail Value</p>
+                      <p className="font-mono tabular-nums font-semibold text-[#BE1A1A]">
+                        {formatCurrency(row.retailValue)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[#766257]">Est. Profit</p>
+                      <p className="font-mono tabular-nums font-semibold text-[#16A34A]">
+                        {formatCurrency(row.potentialProfit)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
                   <tr>

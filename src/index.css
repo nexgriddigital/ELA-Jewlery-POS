@@ -22,6 +22,16 @@
     font-family: var(--font-sans);
     background-color: #FAF8F5;
     color: #231712;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  a,
+  select,
+  input,
+  textarea {
+    touch-action: manipulation;
   }
 
   h1,
@@ -32,6 +42,10 @@
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Print Stylesheet for Item Label Studio & Sales Receipts */

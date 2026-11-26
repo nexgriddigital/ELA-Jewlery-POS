@@ -91,13 +91,13 @@ export const DebtCreditView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Debt / Credit Ledger &amp; Report
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Track customer credit tabs, record installment repayments &amp; monitor balances · Open
             tabs survive Yearly Reset
           </p>
@@ -106,7 +106,7 @@ export const DebtCreditView: React.FC = () => {
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
         >
           <Plus className="w-4 h-4" aria-hidden="true" />
           <span>Record Credit Tab</span>
@@ -114,37 +114,37 @@ export const DebtCreditView: React.FC = () => {
       </div>
 
       {/* Debt Report KPI Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#231712] text-white rounded-xl p-4">
-          <p className="text-xs text-[#F7D87F]">Total Outstanding Balance</p>
-          <p className="font-mono tabular-nums text-2xl font-bold mt-1">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-[#231712] text-white rounded-xl p-3.5 sm:p-4">
+          <p className="text-xs text-[#F7D87F]">Outstanding Balance</p>
+          <p className="font-mono tabular-nums text-lg sm:text-2xl font-bold mt-1">
             {formatCurrency(report.totalOutstandingBalance)}
           </p>
           <p className="text-xs text-[#C8B9AE] mt-1">{report.openTabsCount} open tab(s)</p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Credit Issued (Range)</p>
-          <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
             {formatCurrency(report.totalIssuedInRange)}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Repayments Collected</p>
-          <p className="font-mono tabular-nums text-2xl font-semibold text-[#16A34A] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#16A34A] mt-1">
             {formatCurrency(report.totalCollectedInRange)}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Settled Tabs</p>
-          <p className="font-mono tabular-nums text-2xl font-semibold text-[#231712] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-2xl font-semibold text-[#231712] mt-1">
             {report.settledTabsCount}
           </p>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white border border-[#E8DFD3] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3]">
+      <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3] w-full sm:w-auto">
           {(
             [
               { id: 'all', label: 'All Tabs' },
@@ -156,7 +156,7 @@ export const DebtCreditView: React.FC = () => {
               key={t.id}
               type="button"
               onClick={() => setStatusFilter(t.id)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer whitespace-nowrap ${
+              className={`min-h-[36px] px-3 py-1.5 text-xs font-semibold rounded-md cursor-pointer whitespace-nowrap ${
                 statusFilter === t.id
                   ? 'bg-[#231712] text-[#F7D87F]'
                   : 'text-[#5C493F] hover:text-[#231712]'
@@ -167,32 +167,36 @@ export const DebtCreditView: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <label htmlFor="debt-from" className="text-[#766257]">
-            Issued From
-          </label>
-          <input
-            id="debt-from"
-            type="date"
-            value={range.from}
-            onChange={(e) => setRange({ ...range, from: e.target.value })}
-            className="px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
-          />
-          <label htmlFor="debt-to" className="text-[#766257]">
-            To
-          </label>
-          <input
-            id="debt-to"
-            type="date"
-            value={range.to}
-            onChange={(e) => setRange({ ...range, to: e.target.value })}
-            className="px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
-          />
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 text-xs w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+            <label htmlFor="debt-from" className="text-[#766257]">
+              Issued From
+            </label>
+            <input
+              id="debt-from"
+              type="date"
+              value={range.from}
+              onChange={(e) => setRange({ ...range, from: e.target.value })}
+              className="w-full sm:w-auto px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+            <label htmlFor="debt-to" className="text-[#766257]">
+              To
+            </label>
+            <input
+              id="debt-to"
+              type="date"
+              value={range.to}
+              onChange={(e) => setRange({ ...range, to: e.target.value })}
+              className="w-full sm:w-auto px-2.5 py-1.5 font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-md"
+            />
+          </div>
           {(range.from || range.to) && (
             <button
               type="button"
               onClick={() => setRange({ from: '', to: '' })}
-              className="text-xs font-medium text-[#BE1A1A] hover:underline cursor-pointer"
+              className="col-span-2 sm:col-span-1 text-left sm:text-center text-xs font-medium text-[#BE1A1A] hover:underline cursor-pointer py-1"
             >
               Clear Dates
             </button>
@@ -200,7 +204,7 @@ export const DebtCreditView: React.FC = () => {
         </div>
       </div>
 
-      {/* Debt Ledger Table */}
+      {/* Debt Ledger Rows */}
       <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
         {filteredDebts.length === 0 ? (
           <div className="p-10 text-center text-sm text-[#766257]">
@@ -214,9 +218,9 @@ export const DebtCreditView: React.FC = () => {
 
               return (
                 <div key={debt.id} className="p-4 hover:bg-[#FAF8F5]/50 transition-colors">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2.5 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-sm font-semibold text-[#231712]">
                           {debt.customerName}
                         </h3>
@@ -241,8 +245,8 @@ export const DebtCreditView: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-5 shrink-0">
-                      <div className="text-right font-mono tabular-nums">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F0E9DF]">
+                      <div className="flex sm:block items-baseline justify-between sm:text-right font-mono tabular-nums">
                         <p className="text-xs text-[#766257]">
                           Paid {formatCurrency(debt.paidAmount)} / {formatCurrency(debt.totalAmount)}
                         </p>
@@ -266,7 +270,7 @@ export const DebtCreditView: React.FC = () => {
                               setPayNote('');
                             }}
                             aria-label={`Record repayment for ${debt.customerName}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer whitespace-nowrap"
+                            className="flex-1 sm:flex-initial min-h-[40px] inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer whitespace-nowrap"
                           >
                             <Wallet className="w-3.5 h-3.5" aria-hidden="true" />
                             <span>Record Payment</span>
@@ -277,7 +281,7 @@ export const DebtCreditView: React.FC = () => {
                           onClick={() => setExpandedId(isExpanded ? null : debt.id)}
                           aria-expanded={isExpanded}
                           aria-label={`Toggle payment history for ${debt.customerName}`}
-                          className="p-2 rounded-lg border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#5C493F] cursor-pointer"
+                          className="min-w-[40px] min-h-[40px] flex items-center justify-center p-2 rounded-lg border border-[#E8DFD3] hover:bg-[#FAF8F5] text-[#5C493F] cursor-pointer"
                         >
                           {isExpanded ? (
                             <ChevronUp className="w-4 h-4" />
@@ -330,11 +334,11 @@ export const DebtCreditView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="debt-create-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleCreateDebt}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="debt-create-title" className="font-display text-xl font-semibold text-[#231712]">
@@ -344,7 +348,7 @@ export const DebtCreditView: React.FC = () => {
                 type="button"
                 onClick={() => setCreateOpen(false)}
                 aria-label="Close credit modal"
-                className="p-1.5 rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -361,7 +365,7 @@ export const DebtCreditView: React.FC = () => {
                   required
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                  className="w-full px-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                 />
               </div>
 
@@ -375,7 +379,7 @@ export const DebtCreditView: React.FC = () => {
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="+251-9..."
-                  className="w-full px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                  className="w-full px-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                 />
               </div>
 
@@ -389,7 +393,7 @@ export const DebtCreditView: React.FC = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g., 18K Gold Bracelet Reserve"
-                  className="w-full px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                  className="w-full px-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                 />
               </div>
 
@@ -406,7 +410,7 @@ export const DebtCreditView: React.FC = () => {
                     required
                     value={totalAmount}
                     onChange={(e) => setTotalAmount(e.target.value)}
-                    className="w-full px-3 py-2 text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                    className="w-full px-3 py-2 text-base sm:text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                   />
                 </div>
                 <div>
@@ -420,7 +424,7 @@ export const DebtCreditView: React.FC = () => {
                     step="0.01"
                     value={paidAmount}
                     onChange={(e) => setPaidAmount(e.target.value)}
-                    className="w-full px-3 py-2 text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                    className="w-full px-3 py-2 text-base sm:text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                   />
                 </div>
               </div>
@@ -434,22 +438,22 @@ export const DebtCreditView: React.FC = () => {
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                  className="w-full px-3 py-2 text-base sm:text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setCreateOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Save Credit Tab
               </button>
@@ -464,11 +468,11 @@ export const DebtCreditView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="repay-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleRecordRepayment}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="repay-modal-title" className="font-display text-lg font-semibold text-[#231712]">
@@ -544,17 +548,17 @@ export const DebtCreditView: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setPayTarget(null)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Confirm Payment
               </button>

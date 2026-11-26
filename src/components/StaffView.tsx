@@ -130,26 +130,26 @@ export const StaffView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Users &amp; Staff Administration
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Create staff accounts, reset passwords/PINs, edit names &amp; phone numbers, or revoke
             access across all devices
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => {
               setRemoveConfirmText('');
               setRemoveAllOpen(true);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-[#D0311E]/50 hover:bg-[#FCE8E6] text-[#BE1A1A] text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-[#D0311E]/50 hover:bg-[#FCE8E6] text-[#BE1A1A] text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
           >
             <UserX className="w-4 h-4" aria-hidden="true" />
             <span>Remove All Other Users</span>
@@ -161,7 +161,7 @@ export const StaffView: React.FC = () => {
               setNewPin(String(Math.floor(1000 + Math.random() * 9000)));
               setCreateOpen(true);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+            className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
           >
             <UserPlus className="w-4 h-4" aria-hidden="true" />
             <span>Add Staff User</span>
@@ -182,7 +182,7 @@ export const StaffView: React.FC = () => {
         </span>
       </div>
 
-      {/* Staff Table */}
+      {/* Staff Cards (Mobile) & Table (Desktop) */}
       <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
         {staff.length === 0 ? (
           <div className="p-10 text-center text-sm text-[#766257]">
@@ -190,79 +190,146 @@ export const StaffView: React.FC = () => {
             account.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Staff Name</th>
-                  <th className="px-4 py-3 font-medium">Role</th>
-                  <th className="px-4 py-3 font-medium">Phone Number</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E8DFD3]">
-                {staff.map((member) => (
-                  <tr key={member.id} className="hover:bg-[#FAF8F5]/75">
-                    <td className="px-4 py-3 font-semibold text-[#231712] whitespace-nowrap">
-                      {member.name}
-                    </td>
-                    <td className="px-4 py-3 text-xs font-medium text-[#5C493F] whitespace-nowrap">
-                      {member.role}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs text-[#231712] whitespace-nowrap">
-                      {member.phone || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-[#766257] whitespace-nowrap">
-                      {member.email || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-xs whitespace-nowrap">
-                      {member.status === 'password_reset_required' ? (
-                        <span className="text-[#D0311E] font-semibold">
-                          Reset Issued ({member.lastPasswordReset || 'Pending'})
+          <>
+            {/* Mobile Staff Card List */}
+            <ul className="md:hidden divide-y divide-[#E8DFD3]">
+              {staff.map((member) => (
+                <li key={member.id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#231712] truncate">
+                        {member.name}
+                      </p>
+                      <p className="text-xs text-[#5C493F]">
+                        {member.role}
+                        <span className="mx-1.5 text-[#C8B9AE]" aria-hidden="true">
+                          ·
                         </span>
-                      ) : member.status === 'revoked' ? (
-                        <span className="text-[#BE1A1A] font-semibold">Revoked</span>
-                      ) : (
-                        <span className="text-[#16A34A] font-semibold">Active</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(member)}
-                          aria-label={`Edit name and phone for ${member.name}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] rounded-md cursor-pointer"
-                        >
-                          <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
-                          <span>Edit</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => openReset(member)}
-                          aria-label={`Reset password for ${member.name}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] rounded-md cursor-pointer"
-                        >
-                          <KeyRound className="w-3.5 h-3.5 text-[#BE1A1A]" aria-hidden="true" />
-                          <span>Reset Password</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(member)}
-                          aria-label={`Delete user ${member.name}`}
-                          className="p-1.5 text-[#766257] hover:text-[#BE1A1A] hover:bg-[#FCE8E6] rounded-md cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                        {member.status === 'password_reset_required' ? (
+                          <span className="text-[#D0311E] font-semibold">
+                            Reset Issued ({member.lastPasswordReset || 'Pending'})
+                          </span>
+                        ) : member.status === 'revoked' ? (
+                          <span className="text-[#BE1A1A] font-semibold">Revoked</span>
+                        ) : (
+                          <span className="text-[#16A34A] font-semibold">Active</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-[#766257] space-y-0.5">
+                    <p className="font-mono text-[#231712]">{member.phone || 'No phone'}</p>
+                    <p className="truncate">{member.email || 'No email'}</p>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => openEdit(member)}
+                      aria-label={`Edit name and phone for ${member.name}`}
+                      className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openReset(member)}
+                      aria-label={`Reset password for ${member.name}`}
+                      className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg cursor-pointer"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-[#BE1A1A]" aria-hidden="true" />
+                      <span>Reset PIN</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(member)}
+                      aria-label={`Delete user ${member.name}`}
+                      className="min-w-[40px] min-h-[40px] flex items-center justify-center text-[#BE1A1A] border border-[#D0311E]/30 hover:bg-[#FCE8E6] rounded-lg cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">Staff Name</th>
+                    <th className="px-4 py-3 font-medium">Role</th>
+                    <th className="px-4 py-3 font-medium">Phone Number</th>
+                    <th className="px-4 py-3 font-medium">Email</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#E8DFD3]">
+                  {staff.map((member) => (
+                    <tr key={member.id} className="hover:bg-[#FAF8F5]/75">
+                      <td className="px-4 py-3 font-semibold text-[#231712] whitespace-nowrap">
+                        {member.name}
+                      </td>
+                      <td className="px-4 py-3 text-xs font-medium text-[#5C493F] whitespace-nowrap">
+                        {member.role}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-[#231712] whitespace-nowrap">
+                        {member.phone || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-[#766257] whitespace-nowrap">
+                        {member.email || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap">
+                        {member.status === 'password_reset_required' ? (
+                          <span className="text-[#D0311E] font-semibold">
+                            Reset Issued ({member.lastPasswordReset || 'Pending'})
+                          </span>
+                        ) : member.status === 'revoked' ? (
+                          <span className="text-[#BE1A1A] font-semibold">Revoked</span>
+                        ) : (
+                          <span className="text-[#16A34A] font-semibold">Active</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openEdit(member)}
+                            aria-label={`Edit name and phone for ${member.name}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] rounded-md cursor-pointer"
+                          >
+                            <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>Edit</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => openReset(member)}
+                            aria-label={`Reset password for ${member.name}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[#231712] bg-[#FAF8F5] hover:bg-[#F8EBAB]/60 border border-[#E8DFD3] rounded-md cursor-pointer"
+                          >
+                            <KeyRound className="w-3.5 h-3.5 text-[#BE1A1A]" aria-hidden="true" />
+                            <span>Reset Password</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget(member)}
+                            aria-label={`Delete user ${member.name}`}
+                            className="p-1.5 text-[#766257] hover:text-[#BE1A1A] hover:bg-[#FCE8E6] rounded-md cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -272,11 +339,11 @@ export const StaffView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-staff-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleCreate}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="create-staff-title" className="font-display text-xl font-semibold text-[#231712]">
@@ -374,17 +441,17 @@ export const StaffView: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setCreateOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Create User
               </button>
@@ -399,11 +466,11 @@ export const StaffView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="edit-staff-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleEdit}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="edit-staff-title" className="font-display text-lg font-semibold text-[#231712]">
@@ -479,17 +546,17 @@ export const StaffView: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setEditTarget(null)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Save Changes
               </button>
@@ -504,11 +571,11 @@ export const StaffView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="reset-pw-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleResetPassword}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="reset-pw-title" className="font-display text-lg font-semibold text-[#231712]">
@@ -545,19 +612,19 @@ export const StaffView: React.FC = () => {
               />
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setResetTarget(null)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
-                Confirm Password Reset
+                Confirm Reset
               </button>
             </div>
           </form>
@@ -570,9 +637,9 @@ export const StaffView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-staff-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="bg-white border border-[#E8DFD3] rounded-2xl max-w-sm w-full p-6 space-y-4">
+          <div className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 sm:p-6 space-y-4 pb-safe">
             <h2 id="delete-staff-title" className="font-display text-lg font-semibold text-[#231712]">
               Delete Staff User?
             </h2>
@@ -580,18 +647,18 @@ export const StaffView: React.FC = () => {
               Permanently remove <span className="font-semibold text-[#231712]">{deleteTarget.name}</span>{' '}
               ({deleteTarget.role}) from ELA Jewelry POS?
             </p>
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="grid grid-cols-2 sm:flex sm:justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 text-xs font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleDeleteUser}
-                className="px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Delete User
               </button>
@@ -606,11 +673,11 @@ export const StaffView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="remove-all-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleRemoveAllOtherUsers}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 pb-safe"
           >
             <div className="flex items-center gap-2 text-[#BE1A1A]">
               <AlertTriangle className="w-5 h-5" aria-hidden="true" />
@@ -634,21 +701,21 @@ export const StaffView: React.FC = () => {
                 value={removeConfirmText}
                 onChange={(e) => setRemoveConfirmText(e.target.value)}
                 placeholder="REMOVE ALL"
-                className="w-full px-3 py-2 text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
+                className="w-full px-3 py-2 text-base sm:text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="grid grid-cols-2 sm:flex sm:justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setRemoveAllOpen(false)}
-                className="px-4 py-2 text-xs font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Remove All Users
               </button>

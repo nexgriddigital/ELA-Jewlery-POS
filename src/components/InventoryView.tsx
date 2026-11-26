@@ -249,14 +249,14 @@ export const InventoryView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-[#231712]">
+          <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
             Inventory Management
           </h1>
-          <p className="text-sm text-[#766257] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
             Real-time boutique stock ledger · Auto-adjusted by sales &amp; purchases
           </p>
         </div>
@@ -264,7 +264,7 @@ export const InventoryView: React.FC = () => {
           <button
             type="button"
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#BE1A1A] hover:bg-[#D0311E] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             <span>Add Inventory Item</span>
@@ -273,39 +273,39 @@ export const InventoryView: React.FC = () => {
       </div>
 
       {/* Summary Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Total SKUs / Units</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#231712] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#231712] mt-1">
             {valuation.totalSkus}{' '}
-            <span className="text-sm font-normal text-[#766257]">
+            <span className="text-xs sm:text-sm font-normal text-[#766257]">
               / {valuation.totalUnits} pcs
             </span>
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Total Cost Value</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#231712] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#231712] mt-1">
             {formatCurrency(valuation.totalCostValue)}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Total Retail Value</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#BE1A1A] mt-1">
+          <p className="font-mono tabular-nums text-lg sm:text-xl font-semibold text-[#BE1A1A] mt-1">
             {formatCurrency(valuation.totalRetailValue)}
           </p>
         </div>
-        <div className="bg-white border border-[#E8DFD3] rounded-xl p-4">
+        <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
           <p className="text-xs text-[#766257]">Low / Out of Stock</p>
-          <p className="font-mono tabular-nums text-xl font-semibold text-[#D0311E] mt-1">
+          <p className="font-mono tabular-nums text-base sm:text-xl font-semibold text-[#D0311E] mt-1">
             {valuation.lowStockCount} low · {valuation.outOfStockCount} out
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-[#E8DFD3] rounded-xl p-4 flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[220px]">
+      <div className="bg-white border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 sm:gap-3">
+        <div className="relative flex-1 min-w-0 sm:min-w-[220px]">
           <Search
             className="w-4 h-4 text-[#766257] absolute left-3 top-1/2 -translate-y-1/2"
             aria-hidden="true"
@@ -319,7 +319,7 @@ export const InventoryView: React.FC = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by item name, SKU, barcode, or supplier..."
-            className="w-full pl-9 pr-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+            className="w-full pl-9 pr-3 py-2 text-base sm:text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
           />
         </div>
 
@@ -330,7 +330,7 @@ export const InventoryView: React.FC = () => {
           id="inventory-category-filter"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as 'All' | ProductCategory)}
-          className="px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+          className="w-full sm:w-auto px-3 py-2 text-sm bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
         >
           <option value="All">All Categories</option>
           {PRODUCT_CATEGORIES.map((c) => (
@@ -340,7 +340,7 @@ export const InventoryView: React.FC = () => {
           ))}
         </select>
 
-        <div className="flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3]">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-lg border border-[#E8DFD3] w-full sm:w-auto">
           {(
             [
               { id: 'all', label: 'All Stock' },
@@ -352,7 +352,7 @@ export const InventoryView: React.FC = () => {
               key={tab.id}
               type="button"
               onClick={() => setStockFilter(tab.id)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+              className={`min-h-[36px] px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                 stockFilter === tab.id
                   ? 'bg-[#231712] text-[#F7D87F]'
                   : 'text-[#5C493F] hover:text-[#231712]'
@@ -364,7 +364,7 @@ export const InventoryView: React.FC = () => {
         </div>
       </div>
 
-      {/* Inventory Table */}
+      {/* Inventory Cards (Mobile) & Table (Desktop) */}
       <div className="bg-white border border-[#E8DFD3] rounded-xl overflow-hidden">
         {filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-[#766257]">
@@ -372,120 +372,221 @@ export const InventoryView: React.FC = () => {
             new stock.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
-                <tr>
-                  <th className="px-4 py-3 font-medium">SKU / Barcode</th>
-                  <th className="px-4 py-3 font-medium">Product</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium text-right">Cost</th>
-                  <th className="px-4 py-3 font-medium text-right">Retail</th>
-                  <th className="px-4 py-3 font-medium text-right">In Stock</th>
-                  <th className="px-4 py-3 font-medium text-right">Retail Val.</th>
-                  <th className="px-4 py-3 font-medium text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E8DFD3]">
-                {filtered.map((item) => {
-                  const isLow = item.quantity > 0 && item.quantity <= item.reorderLevel;
-                  const isOut = item.quantity <= 0;
-                  return (
-                    <tr key={item.id} className="hover:bg-[#FAF8F5]/80">
-                      <td className="px-4 py-3 font-mono text-xs text-[#5C493F] whitespace-nowrap">
-                        <div className="font-semibold text-[#231712]">{item.sku}</div>
-                        <div className="text-[11px] text-[#766257]">{item.barcode}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <ItemThumbnail src={item.imageUrl} alt={item.name} />
-                          <div className="min-w-0">
-                            <div className="font-medium text-[#231712]">{item.name}</div>
-                            <div className="text-xs text-[#766257]">
-                              {item.supplier || 'Direct Atelier'}
-                              {item.notes ? ` · ${item.notes}` : ''}
+          <>
+            {/* Mobile Inventory Card List */}
+            <ul className="md:hidden divide-y divide-[#E8DFD3]">
+              {filtered.map((item) => {
+                const isLow = item.quantity > 0 && item.quantity <= item.reorderLevel;
+                const isOut = item.quantity <= 0;
+                return (
+                  <li key={item.id} className="p-3.5 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <ItemThumbnail src={item.imageUrl} alt={item.name} sizeClass="w-14 h-14" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-medium text-[#BE1A1A] truncate">
+                            {item.category}
+                          </span>
+                          <span className="font-mono text-[11px] text-[#766257] shrink-0">
+                            {item.sku}
+                          </span>
+                        </div>
+                        <p className="text-sm font-semibold text-[#231712] leading-snug mt-0.5">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-[#766257] truncate mt-0.5">
+                          {item.supplier || 'Direct Atelier'}
+                          {item.notes ? ` · ${item.notes}` : ''}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-xs pt-1 border-t border-[#F0E9DF]">
+                      <div>
+                        <span className="text-[#766257] block text-[11px]">Cost / Retail</span>
+                        <span className="font-mono tabular-nums font-medium text-[#231712]">
+                          {formatCurrency(item.costPrice)} /{' '}
+                          <strong className="text-[#BE1A1A]">{formatCurrency(item.retailPrice)}</strong>
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[#766257] block text-[11px]">In Stock</span>
+                        <span
+                          className={`font-mono tabular-nums font-semibold ${
+                            isOut ? 'text-[#BE1A1A]' : isLow ? 'text-[#D0311E]' : 'text-[#231712]'
+                          }`}
+                        >
+                          {item.quantity} {isOut ? '(Out)' : isLow ? '(Low)' : 'pcs'}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[#766257] block text-[11px]">Retail Val.</span>
+                        <span className="font-mono tabular-nums font-semibold text-[#231712]">
+                          {formatCurrency(item.retailPrice * item.quantity)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {(canEdit || canDelete) && (
+                      <div className="flex items-center gap-2 pt-0.5">
+                        {canEdit && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAdjustItem(item);
+                                setAdjustDelta('1');
+                              }}
+                              aria-label={`Adjust stock for ${item.name}`}
+                              className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E8DFD3] bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                            >
+                              <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
+                              <span>Adjust</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(item)}
+                              aria-label={`Edit ${item.name}`}
+                              className="min-h-[40px] flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E8DFD3] bg-[#FAF8F5] text-[#231712] cursor-pointer"
+                            >
+                              <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                              <span>Edit</span>
+                            </button>
+                          </>
+                        )}
+                        {canDelete && (
+                          <button
+                            type="button"
+                            onClick={() => deleteInventoryItem(item.id)}
+                            aria-label={`Delete ${item.name}`}
+                            className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg border border-[#D0311E]/30 text-[#BE1A1A] hover:bg-[#FCE8E6] cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[#FAF8F5] text-xs text-[#766257] border-b border-[#E8DFD3]">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">SKU / Barcode</th>
+                    <th className="px-4 py-3 font-medium">Product</th>
+                    <th className="px-4 py-3 font-medium">Category</th>
+                    <th className="px-4 py-3 font-medium text-right">Cost</th>
+                    <th className="px-4 py-3 font-medium text-right">Retail</th>
+                    <th className="px-4 py-3 font-medium text-right">In Stock</th>
+                    <th className="px-4 py-3 font-medium text-right">Retail Val.</th>
+                    <th className="px-4 py-3 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E8DFD3]">
+                  {filtered.map((item) => {
+                    const isLow = item.quantity > 0 && item.quantity <= item.reorderLevel;
+                    const isOut = item.quantity <= 0;
+                    return (
+                      <tr key={item.id} className="hover:bg-[#FAF8F5]/80">
+                        <td className="px-4 py-3 font-mono text-xs text-[#5C493F] whitespace-nowrap">
+                          <div className="font-semibold text-[#231712]">{item.sku}</div>
+                          <div className="text-[11px] text-[#766257]">{item.barcode}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <ItemThumbnail src={item.imageUrl} alt={item.name} />
+                            <div className="min-w-0">
+                              <div className="font-medium text-[#231712]">{item.name}</div>
+                              <div className="text-xs text-[#766257]">
+                                {item.supplier || 'Direct Atelier'}
+                                {item.notes ? ` · ${item.notes}` : ''}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-[#5C493F] whitespace-nowrap">
-                        {item.category}
-                      </td>
-                      <td className="px-4 py-3 font-mono tabular-nums text-right text-[#5C493F]">
-                        {formatCurrency(item.costPrice)}
-                      </td>
-                      <td className="px-4 py-3 font-mono tabular-nums text-right font-medium text-[#231712]">
-                        {formatCurrency(item.retailPrice)}
-                      </td>
-                      <td className="px-4 py-3 font-mono tabular-nums text-right whitespace-nowrap">
-                        <span
-                          className={
-                            isOut
-                              ? 'text-[#BE1A1A] font-bold'
-                              : isLow
-                              ? 'text-[#D0311E] font-semibold'
-                              : 'text-[#231712] font-semibold'
-                          }
-                        >
-                          {item.quantity}
-                        </span>
-                        <span className="text-[11px] text-[#766257] ml-1">
-                          {isOut ? '(Out)' : isLow ? '(Low)' : ''}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-mono tabular-nums text-right text-[#231712]">
-                        {formatCurrency(item.retailPrice * item.quantity)}
-                      </td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
-                        {canEdit || canDelete ? (
-                          <div className="inline-flex items-center gap-1">
-                            {canEdit && (
-                              <>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-[#5C493F] whitespace-nowrap">
+                          {item.category}
+                        </td>
+                        <td className="px-4 py-3 font-mono tabular-nums text-right text-[#5C493F]">
+                          {formatCurrency(item.costPrice)}
+                        </td>
+                        <td className="px-4 py-3 font-mono tabular-nums text-right font-medium text-[#231712]">
+                          {formatCurrency(item.retailPrice)}
+                        </td>
+                        <td className="px-4 py-3 font-mono tabular-nums text-right whitespace-nowrap">
+                          <span
+                            className={
+                              isOut
+                                ? 'text-[#BE1A1A] font-bold'
+                                : isLow
+                                ? 'text-[#D0311E] font-semibold'
+                                : 'text-[#231712] font-semibold'
+                            }
+                          >
+                            {item.quantity}
+                          </span>
+                          <span className="text-[11px] text-[#766257] ml-1">
+                            {isOut ? '(Out)' : isLow ? '(Low)' : ''}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-mono tabular-nums text-right text-[#231712]">
+                          {formatCurrency(item.retailPrice * item.quantity)}
+                        </td>
+                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                          {canEdit || canDelete ? (
+                            <div className="inline-flex items-center gap-1">
+                              {canEdit && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setAdjustItem(item);
+                                      setAdjustDelta('1');
+                                    }}
+                                    aria-label={`Adjust stock for ${item.name}`}
+                                    title="Adjust Stock"
+                                    className="p-1.5 rounded-md text-[#5C493F] hover:bg-[#F8EBAB]/60 hover:text-[#231712] cursor-pointer"
+                                  >
+                                    <SlidersHorizontal className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => openEditModal(item)}
+                                    aria-label={`Edit ${item.name}`}
+                                    title="Edit Product"
+                                    className="p-1.5 rounded-md text-[#5C493F] hover:bg-[#F8EBAB]/60 hover:text-[#231712] cursor-pointer"
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
+                              {canDelete && (
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    setAdjustItem(item);
-                                    setAdjustDelta('1');
-                                  }}
-                                  aria-label={`Adjust stock for ${item.name}`}
-                                  title="Adjust Stock"
-                                  className="p-1.5 rounded-md text-[#5C493F] hover:bg-[#F8EBAB]/60 hover:text-[#231712] cursor-pointer"
+                                  onClick={() => deleteInventoryItem(item.id)}
+                                  aria-label={`Delete ${item.name}`}
+                                  title="Delete Product"
+                                  className="p-1.5 rounded-md text-[#766257] hover:bg-[#FCE8E6] hover:text-[#BE1A1A] cursor-pointer"
                                 >
-                                  <SlidersHorizontal className="w-4 h-4" />
+                                  <Trash2 className="w-4 h-4" />
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => openEditModal(item)}
-                                  aria-label={`Edit ${item.name}`}
-                                  title="Edit Product"
-                                  className="p-1.5 rounded-md text-[#5C493F] hover:bg-[#F8EBAB]/60 hover:text-[#231712] cursor-pointer"
-                                >
-                                  <Pencil className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
-                            {canDelete && (
-                              <button
-                                type="button"
-                                onClick={() => deleteInventoryItem(item.id)}
-                                aria-label={`Delete ${item.name}`}
-                                title="Delete Product"
-                                className="p-1.5 rounded-md text-[#766257] hover:bg-[#FCE8E6] hover:text-[#BE1A1A] cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-[#766257]">View only</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-[#766257]">View only</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -495,11 +596,11 @@ export const InventoryView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="item-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleSaveItem}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-xl w-full p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto pb-safe"
           >
             <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
               <h2 id="item-modal-title" className="font-display text-xl font-semibold text-[#231712]">
@@ -718,17 +819,17 @@ export const InventoryView: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8DFD3] flex justify-end gap-2.5">
+            <div className="pt-3 border-t border-[#E8DFD3] grid grid-cols-2 sm:flex sm:justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-sm font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-5 py-2 text-sm font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 {editingItem ? 'Save Changes' : 'Add to Inventory'}
               </button>
@@ -743,11 +844,11 @@ export const InventoryView: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="adjust-modal-title"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleApplyAdjustment}
-            className="bg-white border border-[#E8DFD3] rounded-2xl max-w-sm w-full p-6 space-y-4"
+            className="bg-white border border-[#E8DFD3] rounded-t-2xl sm:rounded-2xl max-w-sm w-full p-5 sm:p-6 space-y-4 pb-safe"
           >
             <div className="flex items-center justify-between">
               <h2 id="adjust-modal-title" className="font-display text-lg font-semibold text-[#231712]">
@@ -757,7 +858,7 @@ export const InventoryView: React.FC = () => {
                 type="button"
                 onClick={() => setAdjustItem(null)}
                 aria-label="Close stock adjustment modal"
-                className="p-1.5 rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
+                className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg text-[#766257] hover:bg-[#FAF8F5] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -780,21 +881,21 @@ export const InventoryView: React.FC = () => {
                 required
                 value={adjustDelta}
                 onChange={(e) => setAdjustDelta(e.target.value)}
-                className="w-full px-3 py-2 text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                className="w-full px-3 py-2 text-base sm:text-sm font-mono tabular-nums bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setAdjustItem(null)}
-                className="px-4 py-2 text-xs font-medium text-[#5C493F] hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-medium text-[#5C493F] border border-[#E8DFD3] sm:border-transparent hover:bg-[#FAF8F5] rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-[#BE1A1A] hover:bg-[#D0311E] text-white rounded-lg cursor-pointer"
               >
                 Apply Adjustment
               </button>

@@ -49,28 +49,28 @@ export const ResetCenterView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-[#231712]">
+        <h1 className="font-display text-xl sm:text-2xl font-semibold text-[#231712]">
           System Reset &amp; Fiscal Year Close
         </h1>
-        <p className="text-sm text-[#766257] mt-0.5">
+        <p className="text-xs sm:text-sm text-[#766257] mt-0.5">
           Safely close an accounting year while retaining stock &amp; open tabs, or perform a full
           system reset
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
         {/* 9.2 Yearly Reset (Preserves Open Tabs & Current Inventory) */}
         <form
           onSubmit={handleYearlyReset}
-          className="bg-white border border-[#F7D87F] rounded-2xl p-6 flex flex-col justify-between space-y-5"
+          className="bg-white border border-[#F7D87F] rounded-2xl p-4 sm:p-6 flex flex-col justify-between space-y-5"
         >
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold text-[#BE1A1A]">Recommended Fiscal Close</p>
-                <h2 className="font-display text-xl font-semibold text-[#231712] mt-1">
+                <h2 className="font-display text-lg sm:text-xl font-semibold text-[#231712] mt-1">
                   Yearly Reset
                 </h2>
               </div>
@@ -83,7 +83,7 @@ export const ResetCenterView: React.FC = () => {
               all open customer credit tabs.
             </p>
 
-            <div className="grid grid-cols-2 gap-3 text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-xl p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 text-xs bg-[#FAF8F5] border border-[#E8DFD3] rounded-xl p-3.5 sm:p-4">
               <div className="space-y-1.5">
                 <p className="font-semibold text-[#16A34A] flex items-center gap-1">
                   <Check className="w-3.5 h-3.5" aria-hidden="true" />
@@ -125,14 +125,14 @@ export const ResetCenterView: React.FC = () => {
                 value={yearlyInput}
                 onChange={(e) => setYearlyInput(e.target.value)}
                 placeholder="YEARLY RESET"
-                className="w-full px-3 py-2 text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
 
             <button
               type="submit"
               disabled={yearlyBusy}
-              className="w-full py-2.5 px-4 bg-[#231712] hover:bg-[#3A271F] text-[#F7D87F] font-semibold text-sm rounded-xl transition-colors cursor-pointer"
+              className="w-full min-h-[46px] py-2.5 px-4 bg-[#231712] hover:bg-[#3A271F] text-[#F7D87F] font-semibold text-sm rounded-xl transition-colors cursor-pointer"
             >
               {yearlyBusy ? 'Closing Fiscal Year...' : 'Execute Yearly Reset'}
             </button>
@@ -142,13 +142,13 @@ export const ResetCenterView: React.FC = () => {
         {/* 9.1 Reset Everything */}
         <form
           onSubmit={handleFullReset}
-          className="bg-white border border-[#D0311E]/50 rounded-2xl p-6 flex flex-col justify-between space-y-5"
+          className="bg-white border border-[#D0311E]/50 rounded-2xl p-4 sm:p-6 flex flex-col justify-between space-y-5"
         >
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold text-[#D0311E]">Irreversible Factory Wipe</p>
-                <h2 className="font-display text-xl font-semibold text-[#231712] mt-1">
+                <h2 className="font-display text-lg sm:text-xl font-semibold text-[#231712] mt-1">
                   Reset Everything
                 </h2>
               </div>
@@ -161,18 +161,18 @@ export const ResetCenterView: React.FC = () => {
               devices.
             </p>
 
-            <div className="bg-[#FCE8E6]/60 border border-[#D0311E]/30 rounded-xl p-4 text-xs space-y-1.5 text-[#231712]">
+            <div className="bg-[#FCE8E6]/60 border border-[#D0311E]/30 rounded-xl p-3.5 sm:p-4 text-xs space-y-1.5 text-[#231712]">
               <p className="font-semibold text-[#BE1A1A]">Records scheduled for deletion:</p>
               <p className="font-mono tabular-nums">
                 {inventory.length} inventory SKUs · {sales.length} sales · {purchases.length}{' '}
                 purchases · {debts.length} debt tabs
               </p>
-              <label className="flex items-center gap-2 pt-2 cursor-pointer text-[#231712]">
+              <label className="flex items-center gap-2.5 pt-2 min-h-[40px] cursor-pointer text-[#231712]">
                 <input
                   type="checkbox"
                   checked={includeStaff}
                   onChange={(e) => setIncludeStaff(e.target.checked)}
-                  className="accent-[#BE1A1A]"
+                  className="w-4 h-4 accent-[#BE1A1A]"
                 />
                 <span>Also remove all staff user accounts</span>
               </label>
@@ -190,14 +190,14 @@ export const ResetCenterView: React.FC = () => {
                 value={fullInput}
                 onChange={(e) => setFullInput(e.target.value)}
                 placeholder="RESET ALL"
-                className="w-full px-3 py-2 text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
+                className="w-full px-3 py-2.5 sm:py-2 text-base sm:text-sm font-mono bg-[#FAF8F5] border border-[#E8DFD3] rounded-lg focus:outline-none focus:border-[#BE1A1A]"
               />
             </div>
 
             <button
               type="submit"
               disabled={fullBusy}
-              className="w-full py-2.5 px-4 bg-[#BE1A1A] hover:bg-[#D0311E] text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
+              className="w-full min-h-[46px] py-2.5 px-4 bg-[#BE1A1A] hover:bg-[#D0311E] text-white font-semibold text-sm rounded-xl transition-colors cursor-pointer"
             >
               {fullBusy ? 'Wiping System...' : 'Reset Everything'}
             </button>
